@@ -60,7 +60,7 @@ Not supported yet:
 The tool can be run from source in Docker. To run tool in Docker you need to clone the repository first:
 
 ```bash
-
+git clone https://github.com/wpcontentvault/wpcontentvault-cli.git
 ```
 
 Next, go to the project folder, build the container, and run the container shell:
