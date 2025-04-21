@@ -1,0 +1,53 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Console\Commands\Discover;
+
+use App\Configuration\GlobalConfiguration;
+use App\Console\Commands\AbstractApplicationCommand;
+use App\Repositories\ArticleRepository;
+use App\Services\Vault\Article\ArticleReader;
+
+class ReloadAllArticlesCommand extends AbstractApplicationCommand
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'reload-articles-from-disk {--update} {--replace}';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Reloads already discovered articles from vault';
+
+    public function handle(
+        ArticleRepository $articleRepository,
+        ArticleReader $loader,
+        GlobalConfiguration $config,
+        ArticleRepository $articles
+    ): int {
+        $replaceImages = $this->option('replace') ?? false;
+        if ($replaceImages) {
+            $config->replaceImages();
+        }
+        $updateImages = $this->option('update') ?? false;
+        if ($updateImages) {
+            $config->updateImages();
+        }
+
+        $list = $articles->getAllArticles();
+
+        foreach ($list as $article) {
+            $loaded = $loader->loadArticleFromPath($article->path);
+
+            file_put_contents($loaded->path.'article_id.txt', $article->getKey());
+        }
+
+        return self::SUCCESS;
+    }
+}

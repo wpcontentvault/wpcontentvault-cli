@@ -1,0 +1,9 @@
+parameters:
+	level: 5
+	paths:
+		- app
+		- bootstrap
+		- config
+		- database
+	ignoreErrors:
+		- '#PHPDoc tag @mixin contains unknown class Eloquent.#'
