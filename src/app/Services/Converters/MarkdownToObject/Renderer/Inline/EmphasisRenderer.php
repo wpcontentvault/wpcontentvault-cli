@@ -20,14 +20,7 @@ final class EmphasisRenderer implements NodeObjectRendererInterface, XmlNodeRend
 
         $attrs = $node->data->get('attributes');
 
-        $collection = $childRenderer->renderNodes($node->children());
-        $content = '';
-        foreach ($collection as $item) {
-            /** @var ObjectBlock $item */
-            $content .= $item->getRenderedContent();
-        }
-
-        return new EmphasisObject($attrs, collect(), $content);
+        return new EmphasisObject($attrs,  $childRenderer->renderNodes($node->children()));
     }
 
     public function getXmlTagName(Node $node): string

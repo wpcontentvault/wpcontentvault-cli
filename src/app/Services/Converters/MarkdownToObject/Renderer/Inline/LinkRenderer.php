@@ -29,7 +29,7 @@ use League\CommonMark\Xml\XmlNodeRendererInterface;
 final class LinkRenderer implements NodeObjectRendererInterface, XmlNodeRendererInterface
 {
     /**
-     * @param  Link  $node
+     * @param Link $node
      *
      * {@inheritDoc}
      *
@@ -47,12 +47,14 @@ final class LinkRenderer implements NodeObjectRendererInterface, XmlNodeRenderer
             $attrs['title'] = $title;
         }
 
-        if (isset($attrs['target']) && $attrs['target'] === '_blank' && ! isset($attrs['rel'])) {
+        if (isset($attrs['target']) && $attrs['target'] === '_blank' && !isset($attrs['rel'])) {
             $attrs['rel'] = 'noopener noreferrer';
         }
 
-        if (LinkChecker::isYoutubeURL($attrs['href'])) {
-            return new VideoLinkObject($attrs, $childRenderer->renderNodes($node->children()));
+        if (count($node->parent()->children()) === 1) {
+            if (LinkChecker::isYoutubeURL($attrs['href'])) {
+                return new VideoLinkObject($attrs, $childRenderer->renderNodes($node->children()));
+            }
         }
 
         return new LinkObject($attrs, $childRenderer->renderNodes($node->children()));
@@ -64,7 +66,7 @@ final class LinkRenderer implements NodeObjectRendererInterface, XmlNodeRenderer
     }
 
     /**
-     * @param  Link  $node
+     * @param Link $node
      * @return array<string, scalar>
      *
      * @psalm-suppress MoreSpecificImplementedParamType
