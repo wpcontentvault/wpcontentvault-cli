@@ -16,7 +16,7 @@ class CheckingService
         private ApplicationOutput         $output
     ) {}
 
-    public function checkArticle(Article $article): void
+    public function checkArticle(Article $article): int
     {
         $this->output->info("Checking article $article->title, ({$article->external_id})");
 
@@ -27,10 +27,12 @@ class CheckingService
         if (count($errors) === 0) {
             $this->output->info('No errors');
 
-            return;
+            return 0;
         }
 
         $this->printErrors($errors);
+
+        return count($errors);
     }
 
     public function printErrors(Collection $errors): void

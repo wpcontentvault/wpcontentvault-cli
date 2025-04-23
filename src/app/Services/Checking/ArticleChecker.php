@@ -8,6 +8,7 @@ use App\Blocks\ObjectBlock;
 use App\Contracts\Checking\BlockCheckerInterface;
 use App\Contracts\Checking\HasArticlePathInterface;
 use App\Enum\BlockTypeEnum;
+use App\Services\Checking\Checkers\Code\ContainsDollarSignChecker;
 use App\Services\Checking\Checkers\Code\ContainsOnlyCyrillicChecker;
 use App\Services\Checking\Checkers\Code\EmptyCodeBlockChecker;
 use App\Services\Checking\Checkers\Image\HasNonExistentFileChecker;
@@ -18,9 +19,9 @@ class ArticleChecker
     private array $checkers = [
         BlockTypeEnum::CODE->value => [
             EmptyCodeBlockChecker::class,
+            ContainsDollarSignChecker::class,
         ],
         BlockTypeEnum::IMAGE->value => [
-            HasNonExistentFileChecker::class,
         ]
     ];
 

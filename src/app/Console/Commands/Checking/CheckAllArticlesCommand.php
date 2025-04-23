@@ -31,9 +31,13 @@ class CheckAllArticlesCommand extends AbstractApplicationCommand
     {
         $list = $articles->getAllArticles();
 
+        $errorCount = 0;
+
         foreach ($list as $article) {
-            $service->checkArticle($article);
+            $errorCount += $service->checkArticle($article);
         }
+
+        $this->output->info("Errors found: $errorCount");
 
         return self::SUCCESS;
     }
