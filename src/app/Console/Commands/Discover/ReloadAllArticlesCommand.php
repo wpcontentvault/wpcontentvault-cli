@@ -16,7 +16,7 @@ class ReloadAllArticlesCommand extends AbstractApplicationCommand
      *
      * @var string
      */
-    protected $signature = 'reload-articles-from-disk {--update} {--replace}';
+    protected $signature = 'reload-articles-from-disk {--update} {--replace} {--do-not-upload}';
 
     /**
      * The console command description.
@@ -26,7 +26,6 @@ class ReloadAllArticlesCommand extends AbstractApplicationCommand
     protected $description = 'Reloads already discovered articles from vault';
 
     public function handle(
-        ArticleRepository $articleRepository,
         ArticleReader $loader,
         GlobalConfiguration $config,
         ArticleRepository $articles
@@ -38,6 +37,10 @@ class ReloadAllArticlesCommand extends AbstractApplicationCommand
         $updateImages = $this->option('update') ?? false;
         if ($updateImages) {
             $config->updateImages();
+        }
+        $doNotUploadImages = $this->option('do-not-upload') ?? false;
+        if ($doNotUploadImages) {
+            $config->throwOnImageUpload();
         }
 
         $list = $articles->getAllArticles();

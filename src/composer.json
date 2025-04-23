@@ -70,7 +70,9 @@
             "php-http/discovery": true
         }
     },
-    "bin": ["application"],
+    "bin": [
+        "application"
+    ],
     "repositories": [
         {
             "type": "path",
@@ -83,7 +85,7 @@
             "type": "path",
             "url": "extensions/*",
             "options": {
-                "symlink": false
+                "symlink": true
             }
         }
     ],

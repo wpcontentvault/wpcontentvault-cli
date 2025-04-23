@@ -10,6 +10,7 @@ use App\Contracts\AI\AiProviderConfigurationInterface;
 use App\Factories\WPConnectorFactory;
 use App\Registry\ObjectBlockRegistry;
 use App\Registry\SitesRegistry;
+use App\Services\Checking\ArticleChecker;
 use App\Services\Console\ApplicationOutput;
 use App\Services\Exporting\AttachedImageFinder;
 use App\Services\Exporting\RegexImageFinder;
@@ -59,6 +60,10 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->singleton(GlobalConfiguration::class, function () {
             return new GlobalConfiguration;
+        });
+
+        $this->app->singleton(ArticleChecker::class, function () {
+            return new ArticleChecker();
         });
 
         $this->app->bind(AiProviderConfigurationInterface::class, OpenRouterProviderConfiguration::class);
