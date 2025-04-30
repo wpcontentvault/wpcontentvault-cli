@@ -36,7 +36,7 @@ class GetSiteUrlsCommand extends Command
         $hasNext = true;
 
         while ($hasNext) {
-            $posts = $mainSite->query('wp-block-semmi-file-content')
+            $posts = $mainSite->query('')
                 ->onlyPublished(true)
                 ->orderBy('modified', 'desc')
                 ->page($page)
@@ -59,7 +59,7 @@ class GetSiteUrlsCommand extends Command
     {
         foreach ($posts as $post) {
             /** @var PostData $post */
-            echo $post->id."\n";
+            echo $post->url."\n";
         }
     }
 }
