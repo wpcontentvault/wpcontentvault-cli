@@ -10,4 +10,6 @@ enum FinishReason: string
     case TOOL_CALLS = 'tool_calls';
     case CONNECTION_EXCEPTION = 'connection_exception';
     case CLIENT_EXCEPTION = 'client_exception';
+
+    case ERROR = 'error';
 }

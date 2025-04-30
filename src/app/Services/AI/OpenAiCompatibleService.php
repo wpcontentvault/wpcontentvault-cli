@@ -91,6 +91,10 @@ class OpenAiCompatibleService
                     ];
                 }
             }
+
+            if($response->finishReason->value === FinishReason::ERROR->value) {
+                throw new AiClientException("AI operation error: " . $response->content);
+            }
         } while ($response->finishReason->value !== FinishReason::STOP->value);
 
         return new ChatCompletionResult(
