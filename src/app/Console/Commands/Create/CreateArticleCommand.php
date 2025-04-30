@@ -6,10 +6,13 @@ namespace App\Console\Commands\Create;
 
 use App\Console\Commands\AbstractApplicationCommand;
 use App\Context\Markdown\PostMeta;
+use App\Events\ArticleCreated;
+use App\Events\Vault\VaultCreated;
 use App\Repositories\LocaleRepository;
 use App\Services\Vault\Manifest\V1\ManifestWriter;
 use App\Services\Vault\VaultPathResolver;
 
+use Illuminate\Events\Dispatcher;
 use function Laravel\Prompts\multiselect;
 use function Laravel\Prompts\select;
 use function Laravel\Prompts\text;
@@ -32,9 +35,11 @@ class CreateArticleCommand extends AbstractApplicationCommand
 
     public function handle(
         VaultPathResolver $pathResolver,
-        ManifestWriter $manifestWriter,
-        LocaleRepository $locales,
-    ): int {
+        ManifestWriter    $manifestWriter,
+        LocaleRepository  $locales,
+        Dispatcher        $dispatcher,
+    ): int
+    {
         $root = $pathResolver->getArticlesRoot();
 
         $title = text(
@@ -76,7 +81,7 @@ class CreateArticleCommand extends AbstractApplicationCommand
             tags: []
         );
 
-        $articlePath = $root.$title.'/';
+        $articlePath = $root . $title . '/';
 
         if (file_exists($articlePath)) {
             $this->error('Article already exists!');
@@ -85,7 +90,7 @@ class CreateArticleCommand extends AbstractApplicationCommand
         }
 
         mkdir($articlePath, 0755, true);
-        touch($articlePath.'original.md');
+        touch($articlePath . 'original.md');
 
         $manifestWriter->writeManifest($articlePath, 'original', $meta);
 
@@ -109,6 +114,11 @@ class CreateArticleCommand extends AbstractApplicationCommand
         }
 
         $this->info("Article $articlePath created.");
+
+        $dispatcher->dispatch(new ArticleCreated(
+            externalId: 0,
+            path: $articlePath
+        ));
 
         return self::SUCCESS;
     }

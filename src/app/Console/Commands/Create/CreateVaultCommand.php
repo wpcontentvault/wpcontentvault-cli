@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Console\Commands\Create;
 
 use App\Console\Commands\AbstractApplicationCommand;
+use App\Events\Vault\VaultCreated;
 use App\Services\Utils\FilesystemUtils;
 use App\Services\Vault\VaultConfigWriter;
 use App\Services\Vault\VaultPathResolver;
+use Illuminate\Events\Dispatcher;
 use Josantonius\LanguageCode\LanguageCode;
 
 use function Laravel\Prompts\form;
@@ -35,7 +37,9 @@ class CreateVaultCommand extends AbstractApplicationCommand
     public function handle(
         VaultPathResolver $pathResolver,
         VaultConfigWriter $configWriter,
-    ): int {
+        Dispatcher        $dispatcher,
+    ): int
+    {
         $root = $pathResolver->getRoot();
 
         $this->info("Initializing Vault in $root...");
@@ -50,12 +54,14 @@ class CreateVaultCommand extends AbstractApplicationCommand
         $this->initSites($configWriter, $root, $locales);
         $this->initAi($configWriter, $root);
 
-        mkdir($root.'articles', 0777, true);
+        mkdir($root . 'articles', 0777, true);
 
         $this->info('Vault created successfully!');
 
         $this->call('migrate');
         $this->call('refresh-locales');
+
+        $dispatcher->dispatch(new VaultCreated());
 
         return self::SUCCESS;
     }
