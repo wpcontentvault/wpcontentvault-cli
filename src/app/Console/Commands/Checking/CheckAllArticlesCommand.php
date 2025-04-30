@@ -22,7 +22,7 @@ class CheckAllArticlesCommand extends AbstractApplicationCommand
      *
      * @var string
      */
-    protected $description = 'Check article for errors';
+    protected $description = 'Check all discovered articles for errors';
 
     /**
      * Execute the console command.

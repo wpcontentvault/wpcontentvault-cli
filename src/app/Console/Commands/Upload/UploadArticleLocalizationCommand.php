@@ -25,7 +25,7 @@ class UploadArticleLocalizationCommand extends AbstractApplicationCommand
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Upload to remote website a specific locale for the article';
 
     /**
      * Execute the console command.

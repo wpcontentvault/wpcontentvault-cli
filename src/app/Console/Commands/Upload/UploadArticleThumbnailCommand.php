@@ -25,7 +25,7 @@ class UploadArticleThumbnailCommand extends AbstractApplicationCommand
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Upload thumbnail to remote website for article';
 
     /**
      * Execute the console command.

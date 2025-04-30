@@ -23,7 +23,7 @@ class UpdateTranslationsBindingsCommand extends AbstractApplicationCommand
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Update translation binding for article on remote website';
 
     /**
      * Execute the console command.

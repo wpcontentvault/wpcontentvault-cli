@@ -23,7 +23,7 @@ class TranslateArticleToLocaleCommand extends AbstractApplicationCommand
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Generate translations only for a specific locale';
 
     /**
      * Execute the console command.

@@ -25,7 +25,7 @@ class UpdateArticleCategoryCommand extends AbstractApplicationCommand
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Updates article category on remote website';
 
     /**
      * Execute the console command.

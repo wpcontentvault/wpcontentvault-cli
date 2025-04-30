@@ -22,7 +22,7 @@ class ParseParagraphsCommand extends AbstractApplicationCommand
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Parae translatable paragraphs from parsed article';
 
     /**
      * Execute the console command.

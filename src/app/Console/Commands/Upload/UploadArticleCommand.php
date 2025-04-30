@@ -27,7 +27,7 @@ class UploadArticleCommand extends AbstractApplicationCommand
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Upload the specified article to remote website';
 
     /**
      * Execute the console command.

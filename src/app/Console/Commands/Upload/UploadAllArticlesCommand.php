@@ -27,7 +27,7 @@ class UploadAllArticlesCommand extends AbstractApplicationCommand
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Upload all discovered articles to remote website';
 
     public function handle(
         ArticleRepository $articles,

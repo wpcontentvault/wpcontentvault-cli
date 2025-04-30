@@ -27,7 +27,7 @@ class TranslateArticleCommand extends AbstractApplicationCommand
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Generate missing translations for article';
 
     /**
      * Execute the console command.

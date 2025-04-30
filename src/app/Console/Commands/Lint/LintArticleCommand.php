@@ -22,7 +22,7 @@ class LintArticleCommand extends AbstractApplicationCommand
      *
      * @var string
      */
-    protected $description = 'Check article for errors';
+    protected $description = 'Check article file for errors';
 
     /**
      * Execute the console command.

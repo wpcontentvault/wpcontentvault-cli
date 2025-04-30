@@ -24,7 +24,7 @@ class LintAllArticlesCommand extends AbstractApplicationCommand
      *
      * @var string
      */
-    protected $description = 'Check all articles in vault for errors';
+    protected $description = 'Check all article files in vault for errors';
 
     /**
      * Execute the console command.

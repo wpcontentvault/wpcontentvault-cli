@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Console\Commands\Remove;
+namespace App\Console\Commands\Cleanup;
 
 use App\Models\Image;
 use App\Registry\SitesRegistry;

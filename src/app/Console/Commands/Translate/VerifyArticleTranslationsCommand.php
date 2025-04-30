@@ -23,7 +23,7 @@ class VerifyArticleTranslationsCommand extends AbstractApplicationCommand
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Verify that translation file matches original';
 
     /**
      * Execute the console command.
