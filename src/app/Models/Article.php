@@ -82,6 +82,11 @@ class Article extends Model
         return $this->hasMany(ArticleLocalization::class, 'article_id', 'id');
     }
 
+    public function images(): HasMany
+    {
+        return $this->hasMany(Image::class, 'article_id', 'id');
+    }
+
     public function findLocalizationByLocale(Locale $locale): ?ArticleLocalization
     {
         foreach ($this->localizations as $localization) {
