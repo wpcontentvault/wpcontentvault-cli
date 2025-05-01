@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Cleanup;
 
+use App\Console\Commands\AbstractApplicationCommand;
 use App\Repositories\ArticleRepository;
 use Illuminate\Console\Scheduling\Schedule;
-use LaravelZero\Framework\Commands\Command;
 use Symfony\Component\Finder\Finder;
 
-class FindAbandonedImagesForArticleCommand extends Command
+class FindAbandonedImagesForArticleCommand extends AbstractApplicationCommand
 {
     /**
      * The name and signature of the console command.
