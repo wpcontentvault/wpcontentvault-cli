@@ -85,6 +85,19 @@ class MockConnectorBuilder
         return $this;
     }
 
+    public function __call(string $method, array $arguments)
+    {
+        if (count($arguments) === 0 || count($arguments) > 1) {
+            throw new \BadMethodCallException("Method expect at least one argument");
+        }
+
+        if (false === $arguments[0] instanceof Closure) {
+            throw new \BadMethodCallException("Method expect closure as first argument");
+        }
+
+        $this->methods[$method] = $arguments[0];
+    }
+
     public function build(): WPCOnnectorInterface
     {
         $mock = Mockery::mock(WPConnectorInterface::class, function (MockInterface $mock) {

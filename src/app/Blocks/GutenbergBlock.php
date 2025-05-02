@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Blocks;
 
+use App\Configuration\WordpressConfiguration;
+
 abstract class GutenbergBlock
 {
     protected ?string $content = null;
@@ -17,9 +19,9 @@ abstract class GutenbergBlock
         $this->content = $content;
     }
 
-    abstract public function getHTML(): string;
+    abstract public function getHTML(WordpressConfiguration $configuration): string;
 
-    abstract public function render(): array;
+    abstract public function render(WordpressConfiguration $configuration): array;
 
     abstract public function getSlug(): string;
 

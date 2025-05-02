@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Database;
 
 use App\Blocks\GutenbergBlock;
+use App\Configuration\WordpressConfiguration;
 use App\Models\Article;
 use App\Repositories\ParagraphRepository;
 use App\Services\Converters\HTMLToMarkdown\HtmlToMarkdownConverter;
@@ -23,6 +24,7 @@ class ParagraphParser
         private ParagraphHasher $paragraphHasher,
         private ParagraphCleaner $paragraphCleaner,
         private ParagraphRepository $paragraphs,
+        private WordpressConfiguration $configuration
     ) {}
 
     public function parse(Article $article): void
@@ -43,7 +45,7 @@ class ParagraphParser
 
         /** @var GutenbergBlock $block */
         foreach ($gutenbergBlocks as $index => $block) {
-            $html = "<html>{$block->getHTML()}</html>";
+            $html = "<html>{$block->getHTML($this->configuration)}</html>";
             $content = $converter->convert($html);
             $hash = $this->paragraphHasher->getHash($content, $block->getSlug(), $prevBlockHash);
 

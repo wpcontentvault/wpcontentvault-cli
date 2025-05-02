@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Blocks\Gutenberg;
 
 use App\Blocks\GutenbergBlock;
+use App\Configuration\WordpressConfiguration;
 use App\Enum\GutenbergBlogTypeEnum;
+use Doctrine\Inflector\Rules\Word;
 use Illuminate\Support\Collection;
 
 class Quote extends GutenbergBlock
@@ -19,12 +21,12 @@ class Quote extends GutenbergBlock
         $this->items = $items;
     }
 
-    public function render(): array
+    public function render(WordpressConfiguration $configuration): array
     {
         $innerBlocks = [];
 
         foreach ($this->items as $item) {
-            $innerBlocks[] = $item->render();
+            $innerBlocks[] = $item->render($configuration);
         }
 
         return [
@@ -32,7 +34,7 @@ class Quote extends GutenbergBlock
             'attrs' => [
             ],
             'innerBlocks' => $innerBlocks,
-            'innerHTML' => $this->getHTML(),
+            'innerHTML' => $this->getHTML($configuration),
             'innerContent' => $this->getInnerContent(),
         ];
     }
@@ -46,7 +48,7 @@ class Quote extends GutenbergBlock
         ];
     }
 
-    public function getHTML(): string
+    public function getHTML(WordpressConfiguration $configuration): string
     {
         return "\n<blockquote class=\"wp-block-quote\"></blockquote>\n";
     }

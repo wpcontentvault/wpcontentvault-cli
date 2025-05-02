@@ -13,7 +13,7 @@ use WPAjaxConnector\WPAjaxConnectorPHP\WPConnectorInterface;
 
 class SitesRegistry
 {
-    private WPConnectorInterface $mainSiteConnector;
+    private ?WPConnectorInterface $mainSiteConnector = null;
 
     private string $mainSiteLocaleCode;
 
@@ -26,13 +26,15 @@ class SitesRegistry
 
         $sitesConfig = $loader->loadFromPath($pathResolver->getRoot(), 'sites.json');
 
-        $this->mainSiteConnector = $factory->make(
-            $sitesConfig['main']['domain'],
-            $sitesConfig['main']['access_key']
-        );
+        if (($sitesConfig['main'] ?? null) !== null) {
+            $this->mainSiteConnector = $factory->make(
+                $sitesConfig['main']['domain'],
+                $sitesConfig['main']['access_key']
+            );
 
-        $this->connectors[$sitesConfig['main']['locale']] = $this->mainSiteConnector;
-        $this->mainSiteLocaleCode = $sitesConfig['main']['locale'];
+            $this->connectors[$sitesConfig['main']['locale']] = $this->mainSiteConnector;
+            $this->mainSiteLocaleCode = $sitesConfig['main']['locale'];
+        }
 
         foreach ($sitesConfig['locales'] as $config) {
             $this->connectors[$config['locale']] = $factory->make(
@@ -42,8 +44,17 @@ class SitesRegistry
         }
     }
 
+    public function hasMainSiteConnector(): bool
+    {
+        return $this->mainSiteConnector !== null;
+    }
+
     public function getMainSiteConnector(): WPConnectorInterface
     {
+        if (null === $this->mainSiteConnector) {
+            throw new RuntimeException("Main site in not configured!");
+        }
+
         return $this->mainSiteConnector;
     }
 

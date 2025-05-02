@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Blocks\Gutenberg;
 
 use App\Blocks\GutenbergBlock;
+use App\Configuration\WordpressConfiguration;
 use App\Enum\GutenbergBlogTypeEnum;
 
 class Separator extends GutenbergBlock
@@ -14,7 +15,7 @@ class Separator extends GutenbergBlock
         parent::__construct(null);
     }
 
-    public function render(): array
+    public function render(WordpressConfiguration $configuration): array
     {
         return [
             'blockName' => null,
@@ -27,7 +28,7 @@ class Separator extends GutenbergBlock
         ];
     }
 
-    public function getHTML(): string
+    public function getHTML(WordpressConfiguration $configuration): string
     {
         return '</br>';
     }

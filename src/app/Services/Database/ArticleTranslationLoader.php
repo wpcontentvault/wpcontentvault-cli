@@ -7,6 +7,7 @@ namespace App\Services\Database;
 use App\Blocks\Gutenberg\Image;
 use App\Blocks\Gutenberg\Separator;
 use App\Blocks\GutenbergBlock;
+use App\Configuration\WordpressConfiguration;
 use App\Enum\GutenbergBlogTypeEnum;
 use App\Exceptions\Translation\TranslationLoadingException;
 use App\Exceptions\Translation\TranslationMatchingException;
@@ -27,6 +28,7 @@ class ArticleTranslationLoader
         private MarkdownLoader $markdownLoader,
         private ParagraphRepository $paragraphRepository,
         private ObjectToGutenbergConverter $objectToGutenbergConverter,
+        private WordpressConfiguration $wordpressConfiguration,
     ) {}
 
     public function fetchAllTranslationsFromStorage(Article $article, Locale $locale): array
@@ -71,7 +73,7 @@ class ArticleTranslationLoader
                 continue;
             }
 
-            $html = "<html>{$block->getHTML()}</html>";
+            $html = "<html>{$block->getHTML($this->wordpressConfiguration)}</html>";
             $content = $converter->convert($html);
 
             /** @var Paragraph|null $paragraph */

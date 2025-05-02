@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Blocks\Gutenberg;
 
 use App\Blocks\GutenbergBlock;
+use App\Configuration\WordpressConfiguration;
 use App\Enum\GutenbergBlogTypeEnum;
+use Doctrine\Inflector\Rules\Word;
 
 class YoutubeVideo extends GutenbergBlock
 {
@@ -14,7 +16,7 @@ class YoutubeVideo extends GutenbergBlock
         parent::__construct($content);
     }
 
-    public function render(): array
+    public function render(WordpressConfiguration $configuration): array
     {
         return [
             'blockName' => 'core/embed',
@@ -26,14 +28,14 @@ class YoutubeVideo extends GutenbergBlock
                 'className' => 'wp-embed-aspect-16-9 wp-has-aspect-ratio',
             ],
             'innerBlocks' => [],
-            'innerHTML' => $this->getHTML(),
+            'innerHTML' => $this->getHTML($configuration),
             'innerContent' => [
-                $this->getHTML(),
+                $this->getHTML($configuration),
             ],
         ];
     }
 
-    public function getHTML(): string
+    public function getHTML(WordpressConfiguration $configuration): string
     {
         return "\n<figure class=\"wp-block-embed is-type-video is-provider-youtube wp-block-embed-youtube wp-embed-aspect-16-9 wp-has-aspect-ratio\"><div class=\"wp-block-embed__wrapper\">\n{$this->content}\n</div></figure>\n";
     }

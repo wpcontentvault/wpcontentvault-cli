@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Blocks\Gutenberg;
 
 use App\Blocks\GutenbergBlock;
+use App\Configuration\WordpressConfiguration;
 use App\Enum\GutenbergBlogTypeEnum;
+use Doctrine\Inflector\Rules\Word;
 
 class Table extends GutenbergBlock
 {
@@ -15,20 +17,20 @@ class Table extends GutenbergBlock
         parent::__construct($content);
     }
 
-    public function render(): array
+    public function render(WordpressConfiguration $configuration): array
     {
         return [
             'blockName' => 'core/table',
             'attrs' => [],
             'innerBlocks' => [],
-            'innerHTML' => $this->getHTML(),
+            'innerHTML' => $this->getHTML($configuration),
             'innerContent' => [
-                $this->getHTML(),
+                $this->getHTML($configuration),
             ],
         ];
     }
 
-    public function getHTML(): string
+    public function getHTML(WordpressConfiguration $configuration): string
     {
         return "\n<figure class=\"wp-block-table\"><table class=\"has-fixed-layout\">{$this->content}</table></figure>\n";
     }

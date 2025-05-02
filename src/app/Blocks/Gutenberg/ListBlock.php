@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Blocks\Gutenberg;
 
 use App\Blocks\GutenbergBlock;
+use App\Configuration\WordpressConfiguration;
 use App\Enum\GutenbergBlogTypeEnum;
 
 class ListBlock extends GutenbergBlock
@@ -18,14 +19,14 @@ class ListBlock extends GutenbergBlock
         $this->items = $items;
     }
 
-    public function render(): array
+    public function render(WordpressConfiguration $configuration): array
     {
         $innerBlocks = [];
 
         foreach ($this->items as $item) {
             \assert($item instanceof ListItem);
 
-            $innerBlocks[] = $item->render();
+            $innerBlocks[] = $item->render($configuration);
         }
 
         return [
@@ -57,13 +58,13 @@ class ListBlock extends GutenbergBlock
         return $content;
     }
 
-    public function getHTML(): string
+    public function getHTML(WordpressConfiguration $configuration): string
     {
         $content = "<ul>\n";
 
         foreach ($this->items as $item) {
             /** @var ListItem $item */
-            $content .= $item->getHTML()."\n";
+            $content .= $item->getHTML($configuration)."\n";
         }
 
         $content .= '</ul>';
