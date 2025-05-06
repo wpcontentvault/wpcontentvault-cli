@@ -12,6 +12,7 @@ use App\Services\Linting\Linters\ImageNameContainsSizeLinter;
 use App\Services\Linting\Linters\ImageNameContainsSubFolderLinter;
 use App\Services\Linting\Linters\ImagePathIsDotLinter;
 use App\Services\Linting\Linters\ImageWithoutLineBreaksLinter;
+use App\Services\Linting\Linters\UnderscoreWithBackslashLinter;
 use App\Services\Vault\VaultPathResolver;
 
 class LintService
@@ -23,6 +24,7 @@ class LintService
         ImageNameContainsSubFolderLinter::class,
         ImagePathIsDotLinter::class,
         ImageWithoutLineBreaksLinter::class,
+        UnderscoreWithBackslashLinter::class,
     ];
 
     public function __construct(
