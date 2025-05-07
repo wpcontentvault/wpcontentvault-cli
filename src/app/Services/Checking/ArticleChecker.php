@@ -11,6 +11,7 @@ use App\Enum\BlockTypeEnum;
 use App\Services\Checking\Checkers\Code\ContainsDollarSignChecker;
 use App\Services\Checking\Checkers\Code\ContainsOnlyCyrillicChecker;
 use App\Services\Checking\Checkers\Code\EmptyCodeBlockChecker;
+use App\Services\Checking\Checkers\Code\YoutubeVideoIsNotLinkChecker;
 use App\Services\Checking\Checkers\Image\HasNonExistentFileChecker;
 use Illuminate\Support\Collection;
 
@@ -20,6 +21,9 @@ class ArticleChecker
         BlockTypeEnum::CODE->value => [
             EmptyCodeBlockChecker::class,
             ContainsDollarSignChecker::class,
+        ],
+        BlockTypeEnum::PARAGRAPH->value => [
+            YoutubeVideoIsNotLinkChecker::class,
         ],
         BlockTypeEnum::IMAGE->value => [
         ]

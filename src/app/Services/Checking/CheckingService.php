@@ -16,21 +16,29 @@ class CheckingService
         private ApplicationOutput         $output
     ) {}
 
-    public function checkArticle(Article $article): int
+    public function checkArticle(Article $article, bool $printOnlyPath = false): int
     {
-        $this->output->info("Checking article $article->title, ({$article->external_id})");
+        if(false === $printOnlyPath) {
+            $this->output->info("Checking article $article->title, ({$article->external_id})");
+        }
 
         $articleBlocks = $this->blocksDeserializer->deserialize($article);
 
         $errors = $this->checker->checkArticleBlocks($articleBlocks, $article->path);
 
         if (count($errors) === 0) {
-            $this->output->info('No errors');
+            if(false === $printOnlyPath) {
+                $this->output->info('No errors');
+            }
 
             return 0;
         }
 
-        $this->printErrors($errors);
+        if ($printOnlyPath) {
+            $this->output->info($article->path);
+        } else {
+            $this->printErrors($errors);
+        }
 
         return count($errors);
     }
