@@ -19,6 +19,13 @@ class ArticleRepository extends AbstractRepository
         return Article::all();
     }
 
+    public function getArticlesByYear(int $year): Collection
+    {
+        return $this->createQuery()
+            ->whereYear('published_at', $year)
+            ->get();
+    }
+
     public function findArticleByPath(string $path): ?Article
     {
         return $this->createQuery()

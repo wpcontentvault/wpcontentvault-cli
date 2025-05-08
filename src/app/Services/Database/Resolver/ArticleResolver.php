@@ -16,9 +16,9 @@ class ArticleResolver
 {
     public function __construct(
         private ArticleRepository $articles,
-        private SitesRegistry $sitesConfiguration,
-        private PostCreator $articleCreator,
-        private ArticleVerifier $articleVerifier,
+        private SitesRegistry     $sitesConfiguration,
+        private PostCreator       $articleCreator,
+        private ArticleVerifier   $articleVerifier,
     ) {}
 
     public function resolveArticle(string $path, PostMeta $mainMeta, PostMeta $originalMeta): Article
@@ -27,6 +27,13 @@ class ArticleResolver
 
         // If external id in the file was reset, reset it also in DB
         if ($article !== null && $mainMeta->externalId !== null) {
+            $article->title = $mainMeta->title;
+            $article->author = $mainMeta->author;
+            $article->published_at = $mainMeta->publishedAt;
+            $article->modified_at = $mainMeta->modifiedAt;
+            $article->url = $mainMeta->url;
+            $article->save();
+
             return $article;
         }
 

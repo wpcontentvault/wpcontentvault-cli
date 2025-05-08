@@ -32,6 +32,8 @@ WORKDIR /var/www
 COPY ./entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
+RUN apt-get install -y iputils-ping
+
 USER www-data
 
 ENTRYPOINT ["/entrypoint.sh"]

@@ -20,7 +20,7 @@ class UploadAllArticlesCommand extends AbstractApplicationCommand
      *
      * @var string
      */
-    protected $signature = 'upload-articles';
+    protected $signature = 'upload-articles {--year=?}';
 
     /**
      * The console command description.
@@ -30,15 +30,26 @@ class UploadAllArticlesCommand extends AbstractApplicationCommand
     protected $description = 'Upload all discovered articles to remote website';
 
     public function handle(
-        ArticleRepository $articles,
-        ArticleExporter $exporter,
-        ManifestNameResolver $manifestNameResolver,
-        PreviewExporter $coverImporter,
-        PostMetaUpdater $postMetaUpdater,
+        ArticleRepository          $articles,
+        ArticleExporter            $exporter,
+        ManifestNameResolver       $manifestNameResolver,
+        PreviewExporter            $coverImporter,
+        PostMetaUpdater            $postMetaUpdater,
         LocalizationBindingUpdater $localizationBindingUpdater,
-        ApplicationOutput $output,
-    ): int {
-        foreach ($articles->getAllArticles() as $article) {
+        ApplicationOutput          $output,
+    ): int
+    {
+        $year = $this->option('year');
+
+        if (null === $year) {
+            $articlesList = $articles->getAllArticles();
+        } else {
+            $articlesList = $articles->getArticlesByYear(intval($year));
+        }
+
+        $this->info("Found " . count($articlesList) . " articles");
+
+        foreach ($articlesList as $article) {
             $output->info("Uploading {$article->title} ({$article->external_id})");
 
             foreach ($article->localizations as $localization) {

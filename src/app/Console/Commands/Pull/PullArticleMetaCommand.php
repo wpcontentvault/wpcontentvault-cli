@@ -2,38 +2,36 @@
 
 declare(strict_types=1);
 
-namespace App\Console\Commands\Import;
+namespace App\Console\Commands\Pull;
 
 use App\Console\Commands\AbstractApplicationCommand;
 use App\Repositories\ArticleRepository;
-use App\Repositories\LocaleRepository;
 use App\Services\Importing\ArticleStatusImporter;
-use RuntimeException;
 
-class ImportArticleStatusCommand extends AbstractApplicationCommand
+class PullArticleMetaCommand extends AbstractApplicationCommand
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'import-article-status {id} {--locale=}';
+    protected $signature = 'pull-article-meta {id}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Import article status from WordPress using its external id';
+    protected $description = 'Pull article published_at and modified_at dates from WordPress using its external id';
 
     /**
      * Execute the console command.
      */
     public function handle(
-        ArticleRepository $articles,
-        LocaleRepository $locales,
-        ArticleStatusImporter $importer
-    ): int {
+        ArticleRepository     $articles,
+        ArticleStatusImporter $importer,
+    ): int
+    {
         $id = intval($this->argument('id'));
 
         $article = $articles->findArticleByExternalId($id);
@@ -44,14 +42,9 @@ class ImportArticleStatusCommand extends AbstractApplicationCommand
             return self::FAILURE;
         }
 
-        $localeCode = $this->option('locale');
-
-        $locale = $locales->findLocaleByCode($localeCode);
-        if ($locale === null) {
-            throw new RuntimeException("Locale with id {$localeCode} not found");
+        foreach($article->localizations as $localization) {
+            $importer->pullArticleStatus($article, $localization->locale);
         }
-
-        $importer->pullArticleStatus($article, $locale);
 
         return self::SUCCESS;
     }

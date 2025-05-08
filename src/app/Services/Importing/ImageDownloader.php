@@ -14,17 +14,21 @@ class ImageDownloader implements ImageDownloaderInterface
     {
         $extension = pathinfo($url, PATHINFO_EXTENSION);
 
-        if ($extension !== 'png') {
-            $this->saveAndConvertToPng($url, $path, $name);
+        if ($extension === 'webp') {
+            $this->saveWebpAndConvertToPng($url, $path, $name);
+        } elseif ($extension === 'jpeg' || $extension === 'jpg') {
+            $this->saveJpegAndConvertToPng($url, $path, $name);
+        } elseif ($extension === 'png') {
+            file_put_contents($path . '/' . $name . '.' . $extension, file_get_contents($url));
         } else {
-            file_put_contents($path.'/'.$name.'.'.$extension, file_get_contents($url));
+            throw new \RuntimeException("Unknown image extension: $extension");
         }
     }
 
     public function downloadMedia(string $url, string $path): string
     {
         if (str_starts_with($url, '//')) {
-            $url = 'https:'.$url;
+            $url = 'https:' . $url;
         }
 
         $extension = pathinfo($url, PATHINFO_EXTENSION);
@@ -33,24 +37,24 @@ class ImageDownloader implements ImageDownloaderInterface
         $name = pathinfo($originalUrl, PATHINFO_FILENAME);
 
         if ($extension === 'webp') {
-            if (file_exists($path.'/'.$name.'.png')) {
-                return $name.'.png';
+            if (file_exists($path . '/' . $name . '.png')) {
+                return $name . '.png';
             }
 
-            $imagePath = $path.'/';
-            $this->saveAndConvertToPng($originalUrl, $imagePath, $name);
+            $imagePath = $path . '/';
+            $this->saveWebpAndConvertToPng($originalUrl, $imagePath, $name);
 
-            return $name.'.png';
+            return $name . '.png';
         }
-        $imageFile = $path.'/'.$name.'.'.$extension;
+        $imageFile = $path . '/' . $name . '.' . $extension;
 
         if (file_exists($imageFile)) {
-            return $name.'.'.$extension;
+            return $name . '.' . $extension;
         }
 
         $this->saveImageAsIs($originalUrl, $url, $imageFile);
 
-        return $name.'.'.$extension;
+        return $name . '.' . $extension;
 
     }
 
@@ -68,14 +72,27 @@ class ImageDownloader implements ImageDownloaderInterface
         }
     }
 
-    private function saveAndConvertToPng(string $url, string $path, string $name): void
+    private function saveWebpAndConvertToPng(string $url, string $path, string $name): void
     {
         $tmpImagePath = '/tmp/image.webp';
 
         file_put_contents($tmpImagePath, file_get_contents($url));
 
         $im = \imagecreatefromwebp($tmpImagePath);
-        imagepng($im, $path.'/'.$name.'.png');
+        imagepng($im, $path . '/' . $name . '.png');
+
+        imagedestroy($im);
+        unlink($tmpImagePath);
+    }
+
+    private function saveJpegAndConvertToPng(string $url, string $path, string $name): void
+    {
+        $tmpImagePath = '/tmp/image.jpeg';
+
+        file_put_contents($tmpImagePath, file_get_contents($url));
+
+        $im = \imagecreatefromjpeg($tmpImagePath);
+        imagepng($im, $path . '/' . $name . '.png');
 
         imagedestroy($im);
         unlink($tmpImagePath);
