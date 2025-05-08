@@ -15,7 +15,7 @@
         "josantonius/language-code": "^2.0",
         "laravel-zero/framework": "^11.36.1",
         "laravel/prompts": "^0.3.5",
-        "league/commonmark": "^2.5",
+        "league/commonmark": "^2.7",
         "league/html-to-markdown": "^5.1",
         "seriyyy95/losst-extension": "dev-main",
         "seriyyy95/wpajaxconnector-php": "dev-main",
