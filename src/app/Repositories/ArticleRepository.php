@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Models\Article;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
 /**
@@ -14,6 +15,13 @@ use Illuminate\Support\Collection;
  */
 class ArticleRepository extends AbstractRepository
 {
+    public function searchArticles(string $query): Collection
+    {
+        return $this->createQuery()
+            ->where('title', 'LIKE', '%' . $query . '%')
+            ->get();
+    }
+
     public function getAllArticles(): Collection
     {
         return Article::all();
@@ -22,7 +30,10 @@ class ArticleRepository extends AbstractRepository
     public function getArticlesByYear(int $year): Collection
     {
         return $this->createQuery()
-            ->whereYear('published_at', $year)
+            ->where(function (Builder $builder) use ($year) {
+                $builder->whereYear('published_at', $year)
+                    ->orWhereYear('modified_at', $year);
+            })
             ->get();
     }
 

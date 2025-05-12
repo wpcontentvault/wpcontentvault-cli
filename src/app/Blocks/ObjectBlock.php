@@ -60,7 +60,7 @@ abstract class ObjectBlock
         return $rendered;
     }
 
-    public function addAttribute(string $name, string $value): void
+    public function addAttribute(string $name, ?string $value): void
     {
         $this->attributes[$name] = $value;
     }

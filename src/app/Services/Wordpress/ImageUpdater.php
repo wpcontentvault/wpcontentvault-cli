@@ -26,7 +26,7 @@ class ImageUpdater
 
         $response = $this->mainSiteConnector->updateAttachment($imageName, $imageData, $attachmentId);
 
-        if (Str::endsWith($imageName, 'm4v') === false) {
+        if (Str::endsWith($imageName, 'webm') === false) {
             if (empty($response->attachmentUrl) || empty($response->largeUrl)) {
                 throw new RuntimeException('Attachment returned not complete data!');
             }

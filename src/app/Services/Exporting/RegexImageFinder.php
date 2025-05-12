@@ -56,7 +56,7 @@ class RegexImageFinder
             });
 
             if ($imageData === null) {
-                dump('Failed to fetch attachment by id: '." external_id: $externalId, src: $src, alt: $alt");
+                dump('Failed to fetch attachment by id: ' . " external_id: $externalId, src: $src, alt: $alt");
 
                 $imageData = $this->getAttachmentOrNull(function () use ($src) {
                     return $this->mainConnector->getAttachmentByUrl(StringUtils::removeImageSize($src));
@@ -78,6 +78,12 @@ class RegexImageFinder
 
             if ($srcFileName !== $obtainedFileName) {
                 dump("Image file name mismatch, src: $srcFileName, remote: $obtainedFileName");
+            }
+
+            if ($externalId === 0) {
+                dump("External id for $src is zero");
+
+                return;
             }
 
             $image = new ImageMeta(
@@ -133,7 +139,7 @@ class RegexImageFinder
         // Suppress conversion errors (from http://bit.ly/pCCRSX)
         \libxml_use_internal_errors(true);
         // Hack to load utf-8 HTML (from http://bit.ly/pVDyCt)
-        $dom->loadHTML('<?xml encoding="UTF-8">'.$content);
+        $dom->loadHTML('<?xml encoding="UTF-8">' . $content);
         $dom->encoding = 'UTF-8';
         \libxml_clear_errors();
 
@@ -145,7 +151,7 @@ class RegexImageFinder
             $src = $item->getAttribute('src');
 
             if (Str::startsWith($src, '//')) {
-                $src = 'https'.':'.$src;
+                $src = 'https' . ':' . $src;
             }
 
             // Skip images that already resolved using attached image finder

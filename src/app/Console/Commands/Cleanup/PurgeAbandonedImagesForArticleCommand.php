@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Console\Commands\Cleanup;
 
@@ -9,25 +9,22 @@ use App\Repositories\ArticleRepository;
 use App\Services\Cleanup\AbandonedImageCleaner;
 use Illuminate\Console\Scheduling\Schedule;
 
-class FindAbandonedImagesForArticleCommand extends AbstractApplicationCommand
+class PurgeAbandonedImagesForArticleCommand extends AbstractApplicationCommand
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'find-abandoned-images {id}';
+    protected $signature = 'purge-abandoned-images-for-article {id}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Find all not used images for article';
+    protected $description = 'Purges all not used images for article in vault';
 
-    /**
-     * Execute the console command.
-     */
     public function handle(ArticleRepository $articles, AbandonedImageCleaner $cleaner): int
     {
         $id = intval($this->argument('id'));
@@ -37,11 +34,7 @@ class FindAbandonedImagesForArticleCommand extends AbstractApplicationCommand
             throw new \RuntimeException('Article not found!');
         }
 
-        $images = $cleaner->findAbandonedImagesForArticle($article);
-
-        foreach ($images as $image) {
-            $this->info($image->getBasename());
-        }
+        $cleaner->cleanAbandonedImages($article);
 
         return self::SUCCESS;
     }

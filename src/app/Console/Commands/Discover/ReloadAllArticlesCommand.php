@@ -16,7 +16,7 @@ class ReloadAllArticlesCommand extends AbstractApplicationCommand
      *
      * @var string
      */
-    protected $signature = 'reload-articles-from-disk {--update} {--replace} {--do-not-upload}';
+    protected $signature = 'reload-articles-from-disk {--update} {--replace} {--do-not-upload} {--year=?}';
 
     /**
      * The console command description.
@@ -43,7 +43,13 @@ class ReloadAllArticlesCommand extends AbstractApplicationCommand
             $config->throwOnImageUpload();
         }
 
-        $list = $articles->getAllArticles();
+        $year = $this->option('year');
+
+        if (null === $year) {
+            $list = $articles->getAllArticles();
+        } else {
+            $list = $articles->getArticlesByYear(intval($year));
+        }
 
         foreach ($list as $article) {
             $loaded = $loader->loadArticleFromPath($article->path);

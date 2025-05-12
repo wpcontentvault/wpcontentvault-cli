@@ -15,6 +15,13 @@ use Illuminate\Database\Eloquent\Builder;
  */
 class ImageRepository extends AbstractRepository
 {
+    public function findImageByExternalId(int $id): ?Image
+    {
+        return $this->createQuery()
+            ->where('external_id', $id)
+            ->first();
+    }
+
     public function findImageByHashAndArticle(string $hash, Article $article): ?Image
     {
         return $this->createQuery()

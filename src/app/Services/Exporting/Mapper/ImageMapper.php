@@ -16,7 +16,7 @@ class ImageMapper
 {
     public function __construct(
         private ImageRepository $images,
-        private ImageHasher $imageHasher,
+        private ImageHasher     $imageHasher,
     ) {}
 
     public function mapImagesToBlocks(Collection $blocks, Article $article): void
