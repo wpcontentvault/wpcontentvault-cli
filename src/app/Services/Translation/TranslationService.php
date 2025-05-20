@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace App\Services\Translation;
 
+use App\Context\AI\Chat\ChatMessagesBag;
+use App\Context\AI\Chat\ChatItem;
 use App\Context\AI\Tools\ToolsCollection;
 use App\Context\AI\TranslationResult;
+use App\Context\Translation\TranslationHistoryItem;
 use App\Context\Translation\TranslationOptions;
 use App\Enum\GutenbergBlogTypeEnum;
 use App\Exceptions\AiDeserializationException;
 use App\Exceptions\AiException;
+use App\Exceptions\Translation\TranslationHistoryException;
 use App\Models\Article;
 use App\Models\Locale;
 use App\Models\Paragraph;
@@ -19,15 +23,23 @@ use App\Repositories\ParagraphRepository;
 use App\Services\AI\OpenAiCompatibleService;
 use App\Services\Console\ApplicationOutput;
 use App\Services\Database\ArticleTranslationLoader;
+use Illuminate\Support\Collection;
 
 class TranslationService
 {
+    private const TRANSLATABLE_TYPES = [
+        GutenbergBlogTypeEnum::PARAGRAPH->value,
+        GutenbergBlogTypeEnum::HEADING->value,
+        GutenbergBlogTypeEnum::LIST_BLOCK->value,
+        GutenbergBlogTypeEnum::TABLE->value,
+    ];
+
     public function __construct(
-        private OpenAiCompatibleService $aiService,
-        private ParagraphRepository $paragraphs,
+        private OpenAiCompatibleService  $aiService,
+        private ParagraphRepository      $paragraphs,
         private ArticleTranslationLoader $articleTranslationLoader,
-        private ApplicationOutput $applicationOutput,
-        private AiSettingsRegistry $aiSettings,
+        private ApplicationOutput        $applicationOutput,
+        private AiSettingsRegistry       $aiSettings,
     ) {}
 
     public function loadTranslationsFromStorage(Article $article, Locale $locale): void
@@ -36,16 +48,9 @@ class TranslationService
 
         $paragraphs = $this->paragraphs->findParagraphsByArticle($article)->keyBy('id');
 
-        $translatableTypes = [
-            GutenbergBlogTypeEnum::PARAGRAPH->value,
-            GutenbergBlogTypeEnum::HEADING->value,
-            GutenbergBlogTypeEnum::LIST_BLOCK->value,
-            GutenbergBlogTypeEnum::TABLE->value,
-        ];
-
         foreach ($paragraphs as $paragraph) {
             /** @var Paragraph $paragraph */
-            if (in_array($paragraph->type, $translatableTypes) === false) {
+            if (in_array($paragraph->type, self::TRANSLATABLE_TYPES) === false) {
                 continue;
             }
 
@@ -70,17 +75,9 @@ class TranslationService
         $paragraphs = $this->paragraphs->findParagraphsByArticle($article)->keyBy('id');
         $lastHeading = $this->paragraphs->getLastHeaderForArticle($article);
 
-        $translatableTypes = [
-            GutenbergBlogTypeEnum::PARAGRAPH->value,
-            GutenbergBlogTypeEnum::HEADING->value,
-            GutenbergBlogTypeEnum::LIST_BLOCK->value,
-            GutenbergBlogTypeEnum::TABLE->value,
-            GutenbergBlogTypeEnum::QUOTE->value,
-        ];
-
         foreach ($paragraphs as $paragraph) {
             /** @var Paragraph $paragraph */
-            if (in_array($paragraph->type, $translatableTypes) === false) {
+            if (in_array($paragraph->type, self::TRANSLATABLE_TYPES) === false) {
                 continue;
             }
 
@@ -97,6 +94,7 @@ class TranslationService
                 isHeading: $paragraph->type === GutenbergBlogTypeEnum::HEADING->value,
                 isLastHeading: $lastHeading?->getKey() === $paragraph->getKey(),
                 context: $article->context,
+                history: $this->buildTranslationHistory($paragraphs, $paragraph, $locale),
             );
 
             $translated = $this->translate($paragraph->content, $article->locale, $locale, $options);
@@ -111,7 +109,50 @@ class TranslationService
         }
     }
 
-    public function saveTranslationForParagraph(Paragraph $paragraph, Locale $locale, string $content): void
+    private function buildTranslationHistory(Collection $paragraphs, Paragraph $paragraph, Locale $locale): Collection
+    {
+        $history = collect();
+        $list = (clone $paragraphs)->keyBy('order');
+
+        //No history for headings
+        if ($paragraph->type === GutenbergBlogTypeEnum::HEADING->value) {
+            return $history;
+        }
+
+        for ($i = $paragraph->order - 1; $i >= 0; $i--) {
+
+            /** @var Paragraph $sibling */
+            $sibling = $list->get($i);
+            if (null === $sibling) {
+                continue;
+            }
+            if (in_array($sibling->type, self::TRANSLATABLE_TYPES) === false) {
+                continue;
+            }
+
+            //re-read translations from database
+            $sibling->refresh();
+
+            $translation = $sibling->findTranslationByLocale($locale);
+            if (null === $translation) {
+                throw new TranslationHistoryException("No translation found for {$locale} for paragraph {$paragraph->id}");
+            }
+
+            $history->push(new TranslationHistoryItem(
+                original: $sibling->content,
+                translation: $translation->content,
+            ));
+
+            //Provide history only of last paragraph
+            if ($sibling->type === GutenbergBlogTypeEnum::HEADING->value) {
+                break;
+            }
+        }
+
+        return $history;
+    }
+
+    private function saveTranslationForParagraph(Paragraph $paragraph, Locale $locale, string $content): void
     {
         $translation = new ParagraphTranslation;
         $translation->article()->associate($paragraph->article);
@@ -122,14 +163,14 @@ class TranslationService
         $translation->save();
     }
 
-    public function updateTranslationForParagraph(Paragraph $paragraph, ParagraphTranslation $translation, string $content): void
+    private function updateTranslationForParagraph(Paragraph $paragraph, ParagraphTranslation $translation, string $content): void
     {
         $translation->content = $content;
         $translation->source_hash = $paragraph->hash;
         $translation->save();
     }
 
-    public function translate(string $text, Locale $source, Locale $target, TranslationOptions $options): TranslationResult
+    private function translate(string $text, Locale $source, Locale $target, TranslationOptions $options): TranslationResult
     {
         $system = <<<SYSTEM
 You are artificial intelligence the task of whom is translate technical texts from {$source->name} to {$target->name}.
@@ -158,13 +199,23 @@ SYSTEM;
         }
 
         if ($options->context !== null) {
-            $system .= "CONTEXT: \n".$options->context."\nINPUT:\n";
+            $system .= "CONTEXT: \n" . $options->context . "\nINPUT:\n";
         }
+
+        $messages = new ChatMessagesBag();
+        $messages->setSystemMessage($system);
+
+        foreach ($options->history ?? [] as $item) {
+            /** @var TranslationHistoryItem $item */
+            $messages->addUserMessage($item->original);
+            $messages->addAssistantMessage($item->translation);
+        }
+
+        $messages->addUserMessage($text);
 
         $result = $this->aiService->completions(
             $this->aiSettings->getTranslationConfiguration(),
-            $system,
-            $text,
+            $messages,
             new ToolsCollection,
             true
         );
@@ -180,7 +231,7 @@ SYSTEM;
         }
 
         if (isset($data['text']) === false) {
-            throw new AiException('Unexpected AI response! '.print_r($data, true));
+            throw new AiException('Unexpected AI response! ' . print_r($data, true));
         }
 
         return new TranslationResult(

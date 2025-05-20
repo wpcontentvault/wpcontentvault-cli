@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\AI;
 
 use App\Configuration\AI\AiRequestConfiguration;
+use App\Context\AI\Chat\ChatMessagesBag;
 use App\Context\AI\ChatCompletionResult;
 use App\Context\AI\Responses\ChatCompletionResponse;
 use App\Context\AI\Responses\ToolCall;
@@ -38,21 +39,11 @@ class OpenAiCompatibleService
 
     public function completions(
         AiRequestConfiguration $aiConfig,
-        string $system,
-        string $message,
+        ChatMessagesBag $messagesBag,
         ToolsCollection $tools,
         bool $json = false
     ): ChatCompletionResult {
-        $messages = [
-            [
-                'role' => 'system',
-                'content' => $system,
-            ],
-            [
-                'role' => 'user',
-                'content' => $message,
-            ],
-        ];
+        $messages = $messagesBag->toArray();
 
         $inputTokens = 0;
         $outputTokens = 0;
