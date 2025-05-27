@@ -63,7 +63,7 @@ class CreateArticleCommand extends AbstractApplicationCommand
             })
             ->toArray();
         $additionalLocaleCodes = multiselect(
-            label: 'Select additional locales', options: $availableLocales
+            label: 'Select additional locales', options: array_values($availableLocales)
         );
 
         $originalLocale = $locales->findLocaleByCode($originalLocaleCode);
