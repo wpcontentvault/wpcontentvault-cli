@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ad88b624a488c2b4886a9879633a3bd8",
+    "content-hash": "156ab1369f97bc187d89abb9db86b0f1",
     "packages": [
         {
             "name": "brick/math",
@@ -365,6 +365,63 @@
                 }
             ],
             "time": "2024-10-09T13:47:03+00:00"
+        },
+        {
+            "name": "edgaras/strsim",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Edgaras0x4E/StrSim.git",
+                "reference": "ebe3da4a15815130382f893592ff25b04c7bfcad"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Edgaras0x4E/StrSim/zipball/ebe3da4a15815130382f893592ff25b04c7bfcad",
+                "reference": "ebe3da4a15815130382f893592ff25b04c7bfcad",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^11.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Edgaras\\StrSim\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Collection of string similarity and distance algorithms in PHP including Levenshtein, Damerau-Levenshtein, Jaro-Winkler, and more",
+            "homepage": "https://github.com/Edgaras0x4E/StrSim",
+            "keywords": [
+                "Algorithm",
+                "Jaccard",
+                "Jaro",
+                "comparison",
+                "cosine",
+                "damerau-levenshtein",
+                "distance",
+                "fuzzy",
+                "jaro-winkler",
+                "lcs",
+                "levenshtein",
+                "monge-elkan",
+                "needleman-wunsch",
+                "similarity",
+                "smith-waterman",
+                "string",
+                "text"
+            ],
+            "support": {
+                "issues": "https://github.com/Edgaras0x4E/StrSim/issues",
+                "source": "https://github.com/Edgaras0x4E/StrSim/tree/v1.0.0"
+            },
+            "time": "2025-05-25T13:30:15+00:00"
         },
         {
             "name": "filp/whoops",
@@ -4623,7 +4680,7 @@
             "dist": {
                 "type": "path",
                 "url": "extensions/losst-extension",
-                "reference": "ed01f300ddc409412a9ea29b5a33be7eaa1781d4"
+                "reference": "8d36a52560e03b0423183971ccc60ead9e13f7d1"
             },
             "type": "library",
             "extra": {

@@ -9,6 +9,7 @@
         "ext-dom": "*",
         "ext-gd": "*",
         "ext-libxml": "*",
+        "edgaras/strsim": "^1.0",
         "illuminate/log": "^11.44.2",
         "illuminate/queue": "^11.44.2",
         "illuminate/routing": "^11.44.2",

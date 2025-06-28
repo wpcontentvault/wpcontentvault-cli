@@ -6,6 +6,7 @@ namespace App\Services\AI\Client;
 
 use App\Configuration\AI\AiRequestConfiguration;
 use App\Context\AI\Responses\ChatCompletionResponse;
+use App\Context\AI\Responses\EmbeddingsResponse;
 use App\Context\AI\Responses\ToolCall;
 use App\Contracts\AI\AiProviderConfigurationInterface;
 use App\Contracts\AI\ChatClientInterface;
@@ -17,6 +18,31 @@ use Illuminate\Support\Facades\Http;
 class OpenAiCompatibleClient implements ChatClientInterface
 {
     public function __construct() {}
+
+    public function embeddings(
+        AiRequestConfiguration $aiConfig, string $text
+    ): array
+    {
+        $params = [
+            'model' => $aiConfig->getProviderConfiguration()->getModelName($aiConfig->getModel()),
+            'prompt' => $text,
+        ];
+
+        $response = $this->prepareRequest($aiConfig->getProviderConfiguration())
+            ->post('/api/embeddings', $params);
+
+        if ($response->successful() === false) {
+            throw new AIClientException($response->body());
+        }
+
+        $data = $response->json();
+
+        if (false === isset($data['embedding'])) {
+            throw new AIClientException($response->body());
+        }
+
+        return $data['embedding'];
+    }
 
     public function completions(
         AiRequestConfiguration $aiConfig, array $messages = [], array $tools = [], bool $json = false): ChatCompletionResponse
@@ -75,6 +101,6 @@ class OpenAiCompatibleClient implements ChatClientInterface
         return Http::baseUrl($configuration->getBaseUrl())
             ->timeout(240)
             ->connectTimeout(30)
-            ->withHeader('Authorization', 'Bearer '.$configuration->getAuthToken());
+            ->withHeader('Authorization', 'Bearer ' . $configuration->getAuthToken());
     }
 }

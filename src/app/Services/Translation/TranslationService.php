@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Services\Translation;
 
 use App\Context\AI\Chat\ChatMessagesBag;
-use App\Context\AI\Chat\ChatItem;
 use App\Context\AI\Tools\ToolsCollection;
 use App\Context\AI\TranslationResult;
 use App\Context\Translation\TranslationHistoryItem;
@@ -23,6 +22,7 @@ use App\Repositories\ParagraphRepository;
 use App\Services\AI\OpenAiCompatibleService;
 use App\Services\Console\ApplicationOutput;
 use App\Services\Database\ArticleTranslationLoader;
+use App\Services\Database\Dictionary\DictionarySearcher;
 use Illuminate\Support\Collection;
 
 class TranslationService
@@ -40,6 +40,7 @@ class TranslationService
         private ArticleTranslationLoader $articleTranslationLoader,
         private ApplicationOutput        $applicationOutput,
         private AiSettingsRegistry       $aiSettings,
+        private DictionarySearcher       $dictionarySearcher,
     ) {}
 
     public function loadTranslationsFromStorage(Article $article, Locale $locale): void
@@ -199,8 +200,17 @@ SYSTEM;
         }
 
         if ($options->context !== null) {
-            $system .= "CONTEXT: \n" . $options->context . "\nINPUT:\n";
+            $system .= "CONTEXT: \n" . $options->context . "\n";
         }
+
+        $recommendations = $this->dictionarySearcher->getTranslationRecommendations($source, $target, $text);
+
+        if (count($recommendations) > 0) {
+            $system .= "\nTRANSLATION RECOMMENDATIONS:\n";
+            $system .= implode("\n", $recommendations);
+        }
+
+        $system .= "INPUT:\n";
 
         $messages = new ChatMessagesBag();
         $messages->setSystemMessage($system);
@@ -223,6 +233,7 @@ SYSTEM;
         $content = str_replace('```json', '', $result->content);
         $content = str_replace('```', '', $content);
         $content = str_replace('\_', '_', $content);
+        $content = str_replace('\*', '_', $content);
         $data = json_decode($content, true);
 
         if ($data === null) {

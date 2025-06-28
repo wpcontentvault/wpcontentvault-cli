@@ -21,6 +21,7 @@ class OllamaProviderConfiguration implements AiProviderConfigurationInterface
         return match ($model) {
             AiModelEnum::CLAUSE_SONNET_3_5 => '',
             AiModelEnum::DEEPSEEK_V3 => '',
+            AiModelEnum::MXBAI_EMBED_LARGE => 'mxbai-embed-large',
         };
     }
 

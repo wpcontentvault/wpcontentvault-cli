@@ -20,6 +20,8 @@ class AiSettingsRegistry
 
     private AiRequestConfiguration $translationConfiguration;
 
+    private AiRequestConfiguration $embeddingConfiguration;
+
     public function __construct()
     {
         $pathResolver = new VaultPathResolver;
@@ -47,11 +49,28 @@ class AiSettingsRegistry
             $translationModelName,
             $modelConfFactory->makeTranslationConfiguration($translationModelName),
         );
+
+        $embeddingProvider = $this->providers[AiProviderEnum::from($aiConfig['settings']['embeddings']['provider'])->value];
+        $embeddingModelName = AiModelEnum::from($aiConfig['settings']['embeddings']['model']);
+        if (empty($embeddingProvider->getModelName($embeddingModelName))) {
+            throw new RuntimeException("Specified provider does not support model {$embeddingModelName->value}.");
+        }
+
+        $this->embeddingConfiguration = new AiRequestConfiguration(
+            $embeddingProvider,
+            $embeddingModelName,
+            $modelConfFactory->makeEmbeddingConfiguration($embeddingModelName),
+        );
     }
 
     public function getTranslationConfiguration(): AiRequestConfiguration
     {
         return $this->translationConfiguration;
+    }
+
+    public function getEmbeddingConfiguration(): AiRequestConfiguration
+    {
+        return $this->embeddingConfiguration;
     }
 
     public function getSummarizeConfiguration(): AiRequestConfiguration

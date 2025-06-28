@@ -29,20 +29,30 @@ class OpenAiCompatibleService
 
     public function __construct(
         OpenAiCompatibleClient $client,
-        ApplicationOutput $output,
-    ) {
+        ApplicationOutput      $output,
+    )
+    {
         $this->client = $client;
         $this->caller = new ToolsCaller;
 
         $this->output = $output;
     }
 
+    public function embeddings(
+        AiRequestConfiguration $aiConfig,
+        string                 $text
+    ): array
+    {
+        return $this->client->embeddings($aiConfig, $text);
+    }
+
     public function completions(
         AiRequestConfiguration $aiConfig,
-        ChatMessagesBag $messagesBag,
-        ToolsCollection $tools,
-        bool $json = false
-    ): ChatCompletionResult {
+        ChatMessagesBag        $messagesBag,
+        ToolsCollection        $tools,
+        bool                   $json = false
+    ): ChatCompletionResult
+    {
         $messages = $messagesBag->toArray();
 
         $inputTokens = 0;
@@ -83,7 +93,7 @@ class OpenAiCompatibleService
                 }
             }
 
-            if($response->finishReason->value === FinishReason::ERROR->value) {
+            if ($response->finishReason->value === FinishReason::ERROR->value) {
                 throw new AiClientException("AI operation error: " . $response->content);
             }
         } while ($response->finishReason->value !== FinishReason::STOP->value);
@@ -100,7 +110,7 @@ class OpenAiCompatibleService
         try {
             return $callable();
         } catch (AIClientException $exception) {
-            $this->output->error('AI request error: '.$exception->getMessage());
+            $this->output->error('AI request error: ' . $exception->getMessage());
 
             return new ChatCompletionResponse(
                 finishReason: FinishReason::CLIENT_EXCEPTION,
@@ -112,7 +122,7 @@ class OpenAiCompatibleService
                 toolCalls: [],
             );
         } catch (ConnectionException $exception) {
-            $this->output->error('AI request error: '.$exception->getMessage());
+            $this->output->error('AI request error: ' . $exception->getMessage());
 
             return new ChatCompletionResponse(
                 finishReason: FinishReason::CONNECTION_EXCEPTION,

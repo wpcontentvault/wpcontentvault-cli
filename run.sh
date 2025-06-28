@@ -11,4 +11,5 @@ docker run \
   -v "./data:/var/www/data" \
   -v "./vault:/var/www/vault" \
   -v "./data/.bash_history:/var/www/.bash_history" \
+  --add-host=host.docker.internal:host-gateway \
   -it wpcontentvault/wpcontentvault:latest /bin/bash
