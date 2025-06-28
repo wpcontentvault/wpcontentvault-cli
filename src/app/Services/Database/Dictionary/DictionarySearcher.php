@@ -9,7 +9,6 @@ use App\Models\Locale;
 use App\Repositories\DictionaryRecordRepository;
 use App\Services\AI\EmbeddingsService;
 use App\Services\Vector\VectorDictionary;
-use Illuminate\Support\Collection;
 
 class DictionarySearcher
 {
@@ -20,7 +19,7 @@ class DictionarySearcher
         private DictionaryRecordRepository $dictionaryRecords,
     ) {}
 
-    public function getTranslationRecommendations(Locale $source, Locale $target, string $text): Collection
+    public function getTranslationRecommendations(Locale $source, Locale $target, string $text): array
     {
         $embeddings = $this->embeddingService->embeddings($text);
         $vectorDictionary = $this->resolveDictionary($source, $target);
@@ -44,7 +43,7 @@ class DictionarySearcher
             }
         }
 
-        return $suggestions;
+        return $suggestions->toArray();
     }
 
     private function resolveDictionary(Locale $source, Locale $target): VectorDictionary

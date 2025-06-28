@@ -6,7 +6,6 @@ namespace App\Services\AI\Client;
 
 use App\Configuration\AI\AiRequestConfiguration;
 use App\Context\AI\Responses\ChatCompletionResponse;
-use App\Context\AI\Responses\EmbeddingsResponse;
 use App\Context\AI\Responses\ToolCall;
 use App\Contracts\AI\AiProviderConfigurationInterface;
 use App\Contracts\AI\ChatClientInterface;
@@ -51,6 +50,8 @@ class OpenAiCompatibleClient implements ChatClientInterface
             'model' => $aiConfig->getProviderConfiguration()->getModelName($aiConfig->getModel()),
             'messages' => $messages,
             'temperature' => $aiConfig->getModelConfiguration()->getTemperature(),
+            'top_k' => $aiConfig->getModelConfiguration()->getTopK(),
+            'top_p' => $aiConfig->getModelConfiguration()->getTopP(),
         ];
 
         if (empty($tools) === false) {

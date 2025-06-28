@@ -12,4 +12,14 @@ class TranslationClaude35SonnetConfiguration implements AiModelConfigurationInte
     {
         return 0.4;
     }
+
+    public function getTopP(): float
+    {
+        return 0.3;
+    }
+
+    public function getTopK(): float
+    {
+        return 5.0;
+    }
 }

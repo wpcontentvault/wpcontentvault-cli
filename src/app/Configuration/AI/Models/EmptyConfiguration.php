@@ -12,4 +12,14 @@ class EmptyConfiguration implements AiModelConfigurationInterface
     {
         return 0;
     }
+
+    public function getTopP(): float
+    {
+        return 0;
+    }
+
+    public function getTopK(): float
+    {
+        return 0;
+    }
 }
