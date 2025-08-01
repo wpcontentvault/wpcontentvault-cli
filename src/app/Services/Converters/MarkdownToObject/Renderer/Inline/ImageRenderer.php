@@ -42,7 +42,7 @@ final class ImageRenderer implements NodeObjectRendererInterface, XmlNodeRendere
 
         $attrs = $node->data->get('attributes');
 
-        $attrs['src'] = $node->getUrl();
+        $attrs['src'] = $this->getImageSrc($node);
 
         $attrs['alt'] = $this->getAltText($node);
 
@@ -89,5 +89,12 @@ final class ImageRenderer implements NodeObjectRendererInterface, XmlNodeRendere
         }
 
         return $altText;
+    }
+
+    private function getImageSrc(Node $node): string
+    {
+        $url = $node->getUrl();
+        //Fixes case when Obsidian adds ./ before image
+        return ltrim($url, './');
     }
 }
