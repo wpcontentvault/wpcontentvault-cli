@@ -12,7 +12,11 @@ class YoutubeVideoIsNotLinkChecker implements BlockCheckerInterface
 {
     public function check(ObjectBlock $block): CheckingResult
     {
-        $trimmedContent = trim(rtrim($block->getRenderedContent(), "\ \n\r\t\v\0"), "\ \n\r\t\v\0");
+        if (null !== $block->getContent()) {
+            $trimmedContent = trim(rtrim($block->getContent(), "\ \n\r\t\v\0"), "\ \n\r\t\v\0");
+        } else {
+            $trimmedContent = "";
+        }
 
         $failed = false;
 

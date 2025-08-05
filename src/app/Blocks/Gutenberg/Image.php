@@ -30,7 +30,7 @@ class Image extends GutenbergBlock
 
     public function render(WordpressConfiguration $configuration): array
     {
-        assert(empty($this->externalId) === false, $this->src);
+        assert(empty($this->externalId) === false, "External ID is empty: " . $this->src);
 
         return [
             'blockName' => 'core/image',

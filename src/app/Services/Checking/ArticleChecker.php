@@ -10,6 +10,8 @@ use App\Contracts\Checking\HasArticlePathInterface;
 use App\Enum\BlockTypeEnum;
 use App\Services\Checking\Checkers\Code\ContainsDollarSignChecker;
 use App\Services\Checking\Checkers\Code\ContainsOnlyCyrillicChecker;
+use App\Services\Checking\Checkers\Code\ContainsStrongMarkupChecker;
+use App\Services\Checking\Checkers\Code\ContainsStyleMarkupChecker;
 use App\Services\Checking\Checkers\Code\EmptyCodeBlockChecker;
 use App\Services\Checking\Checkers\Code\YoutubeVideoIsNotLinkChecker;
 use App\Services\Checking\Checkers\Image\HasNonExistentFileChecker;
@@ -21,6 +23,8 @@ class ArticleChecker
         BlockTypeEnum::CODE->value => [
             EmptyCodeBlockChecker::class,
             ContainsDollarSignChecker::class,
+            ContainsStrongMarkupChecker::class,
+            ContainsStyleMarkupChecker::class,
         ],
         BlockTypeEnum::PARAGRAPH->value => [
             YoutubeVideoIsNotLinkChecker::class,

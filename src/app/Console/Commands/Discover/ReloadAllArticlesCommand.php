@@ -16,7 +16,7 @@ class ReloadAllArticlesCommand extends AbstractApplicationCommand
      *
      * @var string
      */
-    protected $signature = 'reload-articles-from-disk {--update} {--replace} {--do-not-upload} {--year=?}';
+    protected $signature = 'reload-articles-from-disk {--update} {--replace} {--do-not-upload} {--year=}';
 
     /**
      * The console command description.
