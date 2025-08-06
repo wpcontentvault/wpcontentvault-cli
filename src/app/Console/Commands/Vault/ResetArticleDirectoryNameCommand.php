@@ -9,14 +9,14 @@ use Illuminate\Database\Console\Migrations\BaseCommand;
 use Illuminate\Support\Str;
 use RuntimeException;
 
-class RenameArticleDirectoryCommand extends BaseCommand
+class ResetArticleDirectoryNameCommand extends BaseCommand
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'rename-article-directory {id} {name}';
+    protected $signature = 'reset-article-directory-name {id}';
 
     /**
      * The console command description.
@@ -33,12 +33,17 @@ class RenameArticleDirectoryCommand extends BaseCommand
     ): int
     {
         $id = intval($this->argument('id'));
-        $name = $this->argument('name');
 
         $article = $articles->findArticleByExternalId($id);
         if ($article === null) {
             throw new RuntimeException('Article not found!');
         }
+
+        if ($article->title === null || $article->external_id === null) {
+            throw new RuntimeException('Article must be loaded to main site first!');
+        }
+
+        $name = $article->external_id . '. ' . $article->title;
 
         if (false === file_exists($article->path)) {
             throw new RuntimeException('Article directory does not exist!');

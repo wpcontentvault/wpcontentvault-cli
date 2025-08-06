@@ -37,6 +37,10 @@ class SitesRegistry
         }
 
         foreach ($sitesConfig['locales'] as $config) {
+            if (isset($config['enabled']) && $config['enabled'] === false) {
+                continue;
+            }
+
             $this->connectors[$config['locale']] = $factory->make(
                 $config['domain'],
                 $config['access_key'],
@@ -56,6 +60,15 @@ class SitesRegistry
         }
 
         return $this->mainSiteConnector;
+    }
+
+    public function hasSiteConnectorForLocale(Locale $locale): bool
+    {
+        if (isset($this->connectors[$locale->code])) {
+            return true;
+        }
+
+        return false;
     }
 
     public function getSiteConnectorByLocale(Locale $locale): WPConnectorInterface

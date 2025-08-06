@@ -28,7 +28,7 @@ class ImportArticleThumbnailCommand extends AbstractApplicationCommand
     /**
      * Execute the console command.
      */
-    public function handle(SitesRegistry $sites, LocaleRepository $locales, ArticleImporter $importer): void
+    public function handle(SitesRegistry $sites, LocaleRepository $locales, ArticleImporter $importer): int
     {
         $id = intval($this->argument('id'));
 
@@ -38,8 +38,16 @@ class ImportArticleThumbnailCommand extends AbstractApplicationCommand
         }
 
         $locale = $locales->findLocaleByCode($localeCode);
+
+        if (false === $sites->hasSiteConnectorForLocale($locale)) {
+            $this->output->error("No connector configured for $localeCode");
+
+            return self::FAILURE;
+        }
         $connector = $sites->getSiteConnectorByLocale($locale);
 
         $importer->importCover($id, $connector, 'original');
+
+        return self::SUCCESS;
     }
 }

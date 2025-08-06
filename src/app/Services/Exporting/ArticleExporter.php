@@ -22,17 +22,17 @@ use WPAjaxConnector\WPAjaxConnectorPHP\WPConnectorInterface;
 class ArticleExporter
 {
     public function __construct(
-        private ArticleRepository $articles,
-        private GutenbergRenderer $renderer,
-        private ManifestReader $manifestReader,
-        private ManifestUpdater $manifestUpdater,
-        private SitesRegistry $sitesConfiguration,
-        private MarkdownLoader $markdownLoader,
-        private ImageMapper $imageMapper,
-        private ApplicationOutput $output,
+        private ArticleRepository  $articles,
+        private GutenbergRenderer  $renderer,
+        private ManifestReader     $manifestReader,
+        private ManifestUpdater    $manifestUpdater,
+        private SitesRegistry      $sitesConfiguration,
+        private MarkdownLoader     $markdownLoader,
+        private ImageMapper        $imageMapper,
+        private ApplicationOutput  $output,
         private ChecksumCalculator $checksumCalculator,
         private ExportChecksumMeta $exportChecksumMeta,
-        private Dispatcher $eventDispatcher,
+        private Dispatcher         $eventDispatcher,
     ) {}
 
     public function exportLocalizationFromDir(string $path, string $name, bool $dryRun = false): void
@@ -52,6 +52,12 @@ class ArticleExporter
 
         $this->imageMapper->mapImagesToBlocks($blocks, $article);
 
+        if (false === $this->sitesConfiguration->hasSiteConnectorForLocale($meta->locale)) {
+            $this->output->warning("No connector configured for {$meta->locale->code}");
+
+            return;
+        }
+
         $connector = $this->sitesConfiguration->getSiteConnectorByLocale($meta->locale);
 
         if ($meta->externalId === null) {
@@ -70,21 +76,22 @@ class ArticleExporter
         $this->exportArticle($path, $blocks, $externalId, $connector, $name);
 
         $this->eventDispatcher->dispatch(new ArticleExported(
-            intval($article->external_id),
-            $path,
-            $connector,
-            $meta->locale
-        )
+                intval($article->external_id),
+                $path,
+                $connector,
+                $meta->locale
+            )
         );
     }
 
     public function exportArticle(
-        string $path,
-        Collection $blocks,
-        int $externalId,
+        string               $path,
+        Collection           $blocks,
+        int                  $externalId,
         WPConnectorInterface $connector,
-        string $name,
-    ): void {
+        string               $name,
+    ): void
+    {
         $rendered = $this->renderer->render($blocks);
 
         $sum = $this->checksumCalculator->calculateChecksumForBlocks($rendered);

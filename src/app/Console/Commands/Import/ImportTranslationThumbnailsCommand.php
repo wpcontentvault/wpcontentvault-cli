@@ -31,11 +31,12 @@ class ImportTranslationThumbnailsCommand extends AbstractApplicationCommand
      * Execute the console command.
      */
     public function handle(
-        SitesRegistry $sitesConfiguration,
+        SitesRegistry     $sitesConfiguration,
         ArticleRepository $articles,
-        LocaleRepository $locales,
-        ArticleImporter $importer
-    ): void {
+        LocaleRepository  $locales,
+        ArticleImporter   $importer
+    ): int
+    {
         $id = intval($this->argument('id'));
 
         $article = $articles->findArticleByExternalId($id);
@@ -54,9 +55,17 @@ class ImportTranslationThumbnailsCommand extends AbstractApplicationCommand
                 throw new RuntimeException("Locale $localeCode not found!");
             }
 
+            if (false === $sitesConfiguration->hasSiteConnectorForLocale($locale)) {
+                $this->output->error("No connector configured for $localeCode");
+
+                return self::FAILURE;
+            }
+
             $connector = $sitesConfiguration->getSiteConnectorByLocale($locale);
 
             $importer->importTranslationCover($article, $postId, $connector, $localeCode);
+
+            return self::SUCCESS;
         }
     }
 }

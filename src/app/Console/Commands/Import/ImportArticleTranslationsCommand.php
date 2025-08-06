@@ -54,6 +54,12 @@ class ImportArticleTranslationsCommand extends AbstractApplicationCommand
                 throw new RuntimeException("Locale $localeCode not found!");
             }
 
+            if(false === $sitesConfiguration->hasSiteConnectorForLocale($locale)){
+                $this->output->error("No connector configured for $localeCode");
+
+                return self::FAILURE;
+            }
+
             $connector = $sitesConfiguration->getSiteConnectorByLocale($locale);
 
             $importer->importTranslation($article, $postId, $connector, $locale, $localeCode);

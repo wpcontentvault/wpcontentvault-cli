@@ -38,6 +38,13 @@ class ImportArticleCommand extends AbstractApplicationCommand
         }
 
         $locale = $locales->findLocaleByCode($localeCode);
+
+        if(false === $sitesConfiguration->hasSiteConnectorForLocale($locale)){
+            $this->output->error("No connector configured for $localeCode");
+
+            return self::FAILURE;
+        }
+
         $connector = $sitesConfiguration->getSiteConnectorByLocale($locale);
 
         $importer->importArticle($id, $connector, $locale, 'original');
