@@ -22,6 +22,8 @@ class AiSettingsRegistry
 
     private AiRequestConfiguration $embeddingConfiguration;
 
+    private AiRequestConfiguration $classificationConfiguration;
+
     public function __construct()
     {
         $pathResolver = new VaultPathResolver;
@@ -60,6 +62,18 @@ class AiSettingsRegistry
             $embeddingProvider,
             $embeddingModelName,
             $modelConfFactory->makeEmbeddingConfiguration($embeddingModelName),
+        );
+
+        $classificationProvider = $this->providers[AiProviderEnum::from($aiConfig['settings']['classification']['provider'])->value];
+        $classificationModelName = AiModelEnum::from($aiConfig['settings']['classification']['model']);
+        if (empty($classificationProvider->getModelName($classificationModelName))) {
+            throw new RuntimeException("Specified provider does not support model {$classificationProvider->value}.");
+        }
+
+        $this->classificationConfiguration = new AiRequestConfiguration(
+            $classificationProvider,
+            $classificationModelName,
+            $modelConfFactory->makeClassificationConfiguration($classificationModelName),
         );
     }
 

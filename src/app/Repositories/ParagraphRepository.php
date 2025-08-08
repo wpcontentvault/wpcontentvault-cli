@@ -40,13 +40,16 @@ class ParagraphRepository extends AbstractRepository
             ->first();
     }
 
-    public function findParagraphsByArticle(Article $article): Collection
+    public function findParagraphsByArticle(Article $article, ?int $limit = null): Collection
     {
         return $this->createQuery()
             ->where('article_id', $article->getKey())
             ->where('is_stale', false)
             ->with('translations')
             ->orderBy('order', 'asc')
+            ->when($limit !== null, function (Builder $query) use ($limit) {
+                $query->limit($limit);
+            })
             ->get();
     }
 

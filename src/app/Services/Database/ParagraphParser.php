@@ -20,11 +20,11 @@ class ParagraphParser
 {
     public function __construct(
         private ObjectToGutenbergConverter $objectToGutenbergConverter,
-        private ArticleBlocksDeserializer $deserializer,
-        private ParagraphHasher $paragraphHasher,
-        private ParagraphCleaner $paragraphCleaner,
-        private ParagraphRepository $paragraphs,
-        private WordpressConfiguration $configuration
+        private ArticleBlocksDeserializer  $deserializer,
+        private ParagraphHasher            $paragraphHasher,
+        private ParagraphCleaner           $paragraphCleaner,
+        private ParagraphRepository        $paragraphs,
+        private WordpressConfiguration     $configuration,
     ) {}
 
     public function parse(Article $article): void
@@ -47,14 +47,20 @@ class ParagraphParser
         foreach ($gutenbergBlocks as $index => $block) {
             $html = "<html>{$block->getHTML($this->configuration)}</html>";
             $content = $converter->convert($html);
+
             $hash = $this->paragraphHasher->getHash($content, $block->getSlug(), $prevBlockHash);
-
-            $prevBlockHash = $hash;
-
             // When we have two same paragraphs with same hash the second paragraph will rewrite first!
+            // Try generate hash with position to make it unique
+            if (in_array($hash, $usedHashes) && empty($content) === false) {
+                $hash = $this->paragraphHasher->getHashWithPosition($content, $block->getSlug(), $index);
+            }
+
             if (in_array($hash, $usedHashes) && empty($content) === false) {
                 throw new RuntimeException("Duplicate paragraph hash $hash, may cause problems! Content: $content");
             }
+
+            $prevBlockHash = $hash;
+
 
             $paragraph = $this->paragraphs->findParagraphByHashAndArticle($hash, $article);
 

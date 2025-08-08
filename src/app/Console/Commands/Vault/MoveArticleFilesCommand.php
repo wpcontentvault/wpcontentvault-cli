@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Vault;
 
+use App\Console\Commands\AbstractApplicationCommand;
 use App\Repositories\ArticleRepository;
 use App\Services\Vault\VaultPathResolver;
-use Illuminate\Database\Console\Migrations\BaseCommand;
 use Illuminate\Support\Str;
 use RuntimeException;
 
-class MoveArticleFilesCommand extends BaseCommand
+class MoveArticleFilesCommand extends AbstractApplicationCommand
 {
     /**
      * The name and signature of the console command.

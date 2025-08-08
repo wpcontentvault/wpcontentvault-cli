@@ -13,6 +13,11 @@ class ParagraphHasher
             return $prevBlockHash;
         }
 
-        return md5($content.'_'.$type);
+        return md5($content . '_' . $type);
+    }
+
+    public function getHashWithPosition(string $content, string $type, int $position): string
+    {
+        return md5($content . '_' . $type . '|' . $position);
     }
 }

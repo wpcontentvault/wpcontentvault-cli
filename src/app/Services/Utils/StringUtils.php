@@ -17,10 +17,18 @@ class StringUtils
         $imageUrl = str_replace('-scaled.', '.', $imageUrl);
         $imageUrl = str_replace('-e1507053372297.', '.', $imageUrl);
         $imageUrl = str_replace('-e1530814241401.', '.', $imageUrl);
+        //Need also clean this for image with specified size
+        $imageUrl = str_replace('-scaled-', '-', $imageUrl);
+        $imageUrl = str_replace('-e1530814241401-', '-', $imageUrl);
+        $imageUrl = str_replace('-e1507053372297-', '-', $imageUrl);
 
         // delete size ex:1024x780
-        $pattern = "/-\d+[Xx]\d+\./";
+        $patternSrc = "/-\d+[Xx]\d+\./";
+        $patternWithSize = "/-\d+[Xx]\d+-/";
 
-        return preg_replace($pattern, '.', $imageUrl);
+        $imageUrl = preg_replace($patternSrc, '.', $imageUrl);
+        $imageUrl = preg_replace($patternWithSize, '-', $imageUrl);
+
+        return $imageUrl;
     }
 }

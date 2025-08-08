@@ -9,6 +9,8 @@ use App\Models\Category;
 use App\Models\CategoryLocalization;
 use App\Registry\SitesRegistry;
 use App\Repositories\LocaleRepository;
+use App\Services\Vault\VaultConfigLoader;
+use App\Services\Vault\VaultPathResolver;
 use Illuminate\Support\Facades\DB;
 
 class DiscoverCategoriesCommand extends AbstractApplicationCommand
@@ -18,7 +20,7 @@ class DiscoverCategoriesCommand extends AbstractApplicationCommand
      *
      * @var string
      */
-    protected $signature = 'parse-categories';
+    protected $signature = 'discover-categories';
 
     /**
      * The console command description.
@@ -30,20 +32,29 @@ class DiscoverCategoriesCommand extends AbstractApplicationCommand
     /**
      * Execute the console command.
      */
-    public function handle(LocaleRepository $locales, SitesRegistry $sitesConfig): int
+    public function handle(
+        LocaleRepository  $locales,
+        VaultPathResolver $pathResolver,
+        VaultConfigLoader $loader,
+    ): int
     {
         $localesList = $locales->getAllLocales()->keyBy('code');
 
-        $categoriesData = file_get_contents(resource_path('articles/Articles/categories.json'));
-        $categories = json_decode($categoriesData, true);
+        $categories = $loader->loadFromPath($pathResolver->getRoot(), 'categories.json');
 
-        $categoriesTable = (new Category)->getTable();
         $localizationsTable = (new CategoryLocalization)->getTable();
 
         foreach ($categories as $categoryData) {
-            DB::table($categoriesTable)->updateOrInsert(['slug' => $categoryData['slug']], []);
-
             $category = Category::query()->where('slug', $categoryData['slug'])->first();
+
+            if (null !== $category) {
+                $category->description = $categoryData['description'];
+            } else {
+                $category = new Category();
+                $category->slug = $categoryData['slug'];
+                $category->description = $categoryData['description'];
+            }
+            $category->save();
 
             foreach ($categoryData['localizations'] as $code => $localizationData) {
                 $locale = $localesList->get($code);

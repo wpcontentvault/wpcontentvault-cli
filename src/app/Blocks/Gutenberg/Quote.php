@@ -34,7 +34,7 @@ class Quote extends GutenbergBlock
             'attrs' => [
             ],
             'innerBlocks' => $innerBlocks,
-            'innerHTML' => $this->getHTML($configuration),
+            'innerHTML' => '\n<blockquote class=\"wp-block-quote\"></blockquote>\n',
             'innerContent' => $this->getInnerContent(),
         ];
     }
@@ -50,7 +50,16 @@ class Quote extends GutenbergBlock
 
     public function getHTML(WordpressConfiguration $configuration): string
     {
-        return "\n<blockquote class=\"wp-block-quote\"></blockquote>\n";
+        $content = "\n<blockquote class=\"wp-block-quote\">";
+
+        foreach ($this->items as $item) {
+            /** @var GutenbergBlock $item */
+            $content .= $item->getHTML($configuration);
+        }
+
+        $content .= "</blockquote>\n";
+
+        return $content;
     }
 
     public function getContent(): ?string
@@ -58,8 +67,7 @@ class Quote extends GutenbergBlock
         $content = '';
 
         foreach ($this->items as $item) {
-            /** @var ListItem $item */
-            $content .= $item->getContent()."\n";
+            $content .= $item->getContent() . "\n";
         }
 
         return $content;

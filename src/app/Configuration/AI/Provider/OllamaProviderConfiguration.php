@@ -22,6 +22,7 @@ class OllamaProviderConfiguration implements AiProviderConfigurationInterface
             AiModelEnum::CLAUSE_SONNET_3_5 => '',
             AiModelEnum::DEEPSEEK_V3 => '',
             AiModelEnum::MXBAI_EMBED_LARGE => 'mxbai-embed-large',
+            AiModelEnum::GEMMA_3 => 'gemma3:12b'
         };
     }
 

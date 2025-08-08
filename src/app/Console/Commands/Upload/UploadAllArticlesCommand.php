@@ -20,7 +20,7 @@ class UploadAllArticlesCommand extends AbstractApplicationCommand
      *
      * @var string
      */
-    protected $signature = 'upload-articles {--year=?}';
+    protected $signature = 'upload-articles {--year=}';
 
     /**
      * The console command description.

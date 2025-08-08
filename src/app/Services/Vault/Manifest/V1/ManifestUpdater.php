@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Vault\Manifest\V1;
 
+use App\Models\Category;
+use App\Models\CategoryLocalization;
 use DateTimeInterface;
 use RuntimeException;
 
@@ -33,9 +35,19 @@ class ManifestUpdater
         $this->serialize($path, $name, $json);
     }
 
+    public function updateCategory(string $path, string $name, CategoryLocalization $category): void
+    {
+        $json = $this->deserialize($path, $name);
+
+        $json['category'] = $category->name;
+
+        $this->serialize($path, $name, $json);
+
+    }
+
     private function deserialize(string $path, string $name): array
     {
-        $fileName = $path.'/'.$name.'.json';
+        $fileName = $path . '/' . $name . '.json';
         $data = file_get_contents($fileName);
         $json = json_decode($data, true);
 
@@ -44,7 +56,7 @@ class ManifestUpdater
 
     private function serialize(string $path, string $name, array $json): void
     {
-        $fileName = $path.'/'.$name.'.json';
+        $fileName = $path . '/' . $name . '.json';
 
         file_put_contents(
             $fileName,
