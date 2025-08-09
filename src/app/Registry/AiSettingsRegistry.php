@@ -87,6 +87,11 @@ class AiSettingsRegistry
         return $this->embeddingConfiguration;
     }
 
+    public function getClassificationConfiguration(): AiRequestConfiguration
+    {
+        return $this->classificationConfiguration;
+    }
+
     public function getSummarizeConfiguration(): AiRequestConfiguration
     {
         throw new RuntimeException('Not implemented yet.');

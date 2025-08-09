@@ -65,7 +65,7 @@ class OpenAiCompatibleClient implements ChatClientInterface
         }
 
         $response = $this->prepareRequest($aiConfig->getProviderConfiguration())
-            ->post('chat/completions', $params);
+            ->post('v1/chat/completions', $params);
 
         if ($response->successful() === false) {
             throw new AIClientException($response->body());

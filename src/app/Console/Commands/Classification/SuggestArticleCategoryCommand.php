@@ -8,14 +8,14 @@ use App\Console\Commands\AbstractApplicationCommand;
 use App\Repositories\ArticleRepository;
 use App\Services\Classification\ArticleCategorizer;
 
-class UpdateArticleCategoryCommand extends AbstractApplicationCommand
+class SuggestArticleCategoryCommand extends AbstractApplicationCommand
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'update-category {id}';
+    protected $signature = 'suggest-category {id}';
 
     /**
      * The console command description.

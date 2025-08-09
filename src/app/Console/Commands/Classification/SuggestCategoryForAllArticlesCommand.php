@@ -8,14 +8,14 @@ use App\Console\Commands\AbstractApplicationCommand;
 use App\Repositories\ArticleRepository;
 use App\Services\Classification\ArticleCategorizer;
 
-class UpdateCategoryForAllArticlesCommand extends AbstractApplicationCommand
+class SuggestCategoryForAllArticlesCommand extends AbstractApplicationCommand
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'update-category-for-articles {--year=}';
+    protected $signature = 'suggest-category-for-articles {--year=} {--continue=}';
 
     /**
      * The console command description.
@@ -33,6 +33,7 @@ class UpdateCategoryForAllArticlesCommand extends AbstractApplicationCommand
     )
     {
         $year = $this->option('year');
+        $continue = $this->option('continue');
 
         if (null === $year) {
             $articlesList = $articles->getAllArticles();
@@ -41,6 +42,12 @@ class UpdateCategoryForAllArticlesCommand extends AbstractApplicationCommand
         }
 
         foreach ($articlesList as $article) {
+            if ($continue !== null && $article->external_id !== intval($continue)) {
+                continue;
+            } else {
+                $continue = null;
+            }
+
             $this->info("Updating article {$article->title} ({$article->external_id})");
             $categorizer->updateCategoryForArticle($article);
             $this->info("Done.");

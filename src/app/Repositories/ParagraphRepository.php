@@ -64,6 +64,20 @@ class ParagraphRepository extends AbstractRepository
             ->first();
     }
 
+    public function getParagraphsAfter(Article $article, Paragraph $paragraph, ?int $limit = null): Collection
+    {
+        return $this->createQuery()
+            ->where('article_id', $article->getKey())
+            ->with('translations')
+            ->where('is_stale', false)
+            ->where('order', '>', $paragraph->order)
+            ->orderBy('order', 'desc')
+            ->when($limit !== null, function (Builder $query) use ($limit) {
+                $query->limit($limit);
+            })
+            ->get();
+    }
+
     /**
      * @return Builder<Paragraph>
      */
