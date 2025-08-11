@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
+ * 
+ *
  * @property string $id
  * @property string $path
  * @property array<array-key, mixed>|null $content
@@ -30,10 +32,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \App\Context\IdsBag $paragraph_ids
  * @property string|null $context
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Image> $images
+ * @property-read int|null $images_count
  * @property-read \App\Models\Locale $locale
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ArticleLocalization> $localizations
  * @property-read int|null $localizations_count
- *
  * @method static \Database\Factories\ArticleFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Article newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Article newQuery()
@@ -55,7 +58,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Article whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Article whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Article whereUrl($value)
- *
  * @mixin \Eloquent
  */
 class Article extends Model

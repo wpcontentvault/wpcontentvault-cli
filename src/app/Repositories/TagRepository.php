@@ -4,23 +4,23 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Models\Category;
+use App\Models\Tag;
 use Illuminate\Support\Collection;
 
 /**
- * Class CategoryRepository
+ * Class TagRepository
  *
- * @extends AbstractRepository<Category>
+ * @extends AbstractRepository<Tag>
  */
-class CategoryRepository extends AbstractRepository
+class TagRepository extends AbstractRepository
 {
-    public function getAllCategories(): Collection
+    public function getAllTags(): Collection
     {
         return $this->createQuery()
             ->get();
     }
 
-    public function findCategoryBySlug(string $slug): ?Category
+    public function findTagBySlug(string $slug): ?Tag
     {
         return $this->createQuery()
             ->where('slug', $slug)
@@ -29,6 +29,6 @@ class CategoryRepository extends AbstractRepository
 
     protected function getModelName(): string
     {
-        return Category::class;
+        return Tag::class;
     }
 }

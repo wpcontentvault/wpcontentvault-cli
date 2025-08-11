@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
+ * 
+ *
  * @property int $id
  * @property string $category_id
  * @property int $locale_id
@@ -17,7 +19,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Category $category
  * @property-read \App\Models\Locale $locale
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CategoryLocalization newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CategoryLocalization newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CategoryLocalization query()
@@ -28,7 +29,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CategoryLocalization whereLocaleId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CategoryLocalization whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CategoryLocalization whereUpdatedAt($value)
- *
  * @mixin \Eloquent
  */
 class CategoryLocalization extends Model

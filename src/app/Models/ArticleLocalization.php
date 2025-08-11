@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
+ * 
+ *
  * @property int $id
  * @property string $article_id
  * @property int $locale_id
@@ -20,7 +22,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Article $article
  * @property-read \App\Models\Locale $locale
- *
  * @method static \Database\Factories\ArticleLocalizationFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ArticleLocalization newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ArticleLocalization newQuery()
@@ -34,7 +35,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ArticleLocalization whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ArticleLocalization whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ArticleLocalization whereUrl($value)
- *
  * @mixin \Eloquent
  */
 class ArticleLocalization extends Model

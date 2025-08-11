@@ -10,16 +10,16 @@ class ClassificationGemma3Configuration implements AiModelConfigurationInterface
 {
     public function getTemperature(): float
     {
-        return 0.4;
+        return 0.1;
     }
 
     public function getTopP(): float
     {
-        return 0.3;
+        return 0.8;
     }
 
     public function getTopK(): float
     {
-        return 5.0;
+        return 2.0;
     }
 }

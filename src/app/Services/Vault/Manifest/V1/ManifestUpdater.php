@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\Vault\Manifest\V1;
 
-use App\Models\Category;
 use App\Models\CategoryLocalization;
 use DateTimeInterface;
+use Illuminate\Support\Collection;
 use RuntimeException;
 
 class ManifestUpdater
@@ -40,6 +40,15 @@ class ManifestUpdater
         $json = $this->deserialize($path, $name);
 
         $json['category'] = $category->name;
+
+        $this->serialize($path, $name, $json);
+    }
+
+    public function updateTags(string $path, string $name, Collection $tags): void
+    {
+        $json = $this->deserialize($path, $name);
+
+        $json['tags'] = $tags->pluck('name')->toArray();
 
         $this->serialize($path, $name, $json);
 

@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
+ * 
+ *
  * @property int $id
  * @property string $article_id
  * @property string $paragraph_id
@@ -20,7 +22,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read \App\Models\Article $article
  * @property-read \App\Models\Locale $locale
  * @property-read \App\Models\Paragraph $paragraph
- *
  * @method static \Database\Factories\ParagraphTranslationFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ParagraphTranslation newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ParagraphTranslation newQuery()
@@ -33,7 +34,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ParagraphTranslation whereParagraphId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ParagraphTranslation whereSourceHash($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ParagraphTranslation whereUpdatedAt($value)
- *
  * @mixin \Eloquent
  */
 class ParagraphTranslation extends Model

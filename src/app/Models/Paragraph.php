@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use RuntimeException;
 
 /**
+ * 
+ *
  * @property string $id
  * @property string $article_id
  * @property string $hash
@@ -24,7 +26,6 @@ use RuntimeException;
  * @property-read \App\Models\Article $article
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ParagraphTranslation> $translations
  * @property-read int|null $translations_count
- *
  * @method static \Database\Factories\ParagraphFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Paragraph newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Paragraph newQuery()
@@ -38,7 +39,6 @@ use RuntimeException;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Paragraph whereOrder($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Paragraph whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Paragraph whereUpdatedAt($value)
- *
  * @mixin \Eloquent
  */
 class Paragraph extends Model

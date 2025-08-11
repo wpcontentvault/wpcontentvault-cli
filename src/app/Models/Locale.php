@@ -10,13 +10,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
+ * 
+ *
  * @property int $id
  * @property string $name
  * @property string $code
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property LocaleOptions $options
- *
  * @method static \Database\Factories\LocaleFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Locale newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Locale newQuery()
@@ -27,7 +28,6 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Locale whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Locale whereOptions($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Locale whereUpdatedAt($value)
- *
  * @mixin \Eloquent
  */
 class Locale extends Model
