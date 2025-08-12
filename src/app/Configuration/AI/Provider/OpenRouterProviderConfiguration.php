@@ -26,7 +26,12 @@ class OpenRouterProviderConfiguration implements AiProviderConfigurationInterfac
 
     public function getBaseUrl(): string
     {
-        return 'https://openrouter.ai/api/v1';
+        return 'https://openrouter.ai/api/';
+    }
+
+    public function getEmbeddingsUrl(): string
+    {
+        throw new \RuntimeException('Not supported by this provider!');
     }
 
     public function getAuthToken(): string

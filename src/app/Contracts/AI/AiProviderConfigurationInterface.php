@@ -12,5 +12,7 @@ interface AiProviderConfigurationInterface
 
     public function getBaseUrl(): string;
 
+    public function getEmbeddingsUrl(): string;
+
     public function getAuthToken(): string;
 }

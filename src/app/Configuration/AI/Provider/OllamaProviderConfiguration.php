@@ -6,6 +6,7 @@ namespace App\Configuration\AI\Provider;
 
 use App\Contracts\AI\AiProviderConfigurationInterface;
 use App\Enum\AI\AiModelEnum;
+use Illuminate\Support\Str;
 
 class OllamaProviderConfiguration implements AiProviderConfigurationInterface
 {
@@ -28,7 +29,12 @@ class OllamaProviderConfiguration implements AiProviderConfigurationInterface
 
     public function getBaseUrl(): string
     {
-        return $this->baseUrl;
+        return Str::finish($this->baseUrl, '/');
+    }
+
+    public function getEmbeddingsUrl(): string
+    {
+        return 'api/embeddings';
     }
 
     public function getAuthToken(): string

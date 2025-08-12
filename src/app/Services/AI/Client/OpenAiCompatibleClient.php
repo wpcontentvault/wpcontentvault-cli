@@ -27,8 +27,10 @@ class OpenAiCompatibleClient implements ChatClientInterface
             'prompt' => $text,
         ];
 
-        $response = $this->prepareRequest($aiConfig->getProviderConfiguration())
-            ->post('/api/embeddings', $params);
+        $providerConfig = $aiConfig->getProviderConfiguration();
+
+        $response = $this->prepareRequest($providerConfig)
+            ->post($providerConfig->getEmbeddingsUrl(), $params);
 
         if ($response->successful() === false) {
             throw new AIClientException($response->body());
