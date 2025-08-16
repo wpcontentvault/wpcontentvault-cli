@@ -10,5 +10,6 @@ class ArticleContent
         public readonly string $title,
         public readonly string $annotation,
         public readonly string $warpingUp,
+        public readonly string $tableOfContent = "",
     ) {}
 }

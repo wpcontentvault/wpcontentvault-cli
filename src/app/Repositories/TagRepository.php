@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Models\Tag;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
 /**
@@ -25,6 +26,19 @@ class TagRepository extends AbstractRepository
         return $this->createQuery()
             ->where('slug', $slug)
             ->first();
+    }
+
+    public function findTagByUuid(string $uuid): ?Tag
+    {
+        return $this->createQuery()
+            ->where('id', $uuid)
+            ->first();
+    }
+
+    public function getStaleQuery(): ?Builder
+    {
+        return $this->createQuery()
+            ->where('is_stale', true);
     }
 
     protected function getModelName(): string

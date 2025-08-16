@@ -8,7 +8,7 @@ class MetadataManager
 {
     protected function resolveFilePath(string $path, string $prefix, string $file): string
     {
-        $filePath = $path.'/_meta/'.$prefix.'/'.$file;
+        $filePath = $path . $this->getPrefix() . $prefix . '/' . $file;
 
         $dirPath = dirname($filePath);
 
@@ -17,5 +17,10 @@ class MetadataManager
         }
 
         return $filePath;
+    }
+
+    protected function getPrefix(): string
+    {
+        return '/_meta/';
     }
 }

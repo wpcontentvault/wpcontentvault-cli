@@ -12,6 +12,8 @@ use App\Exceptions\AiDeserializationException;
 use App\Exceptions\AiException;
 use App\Models\Article;
 use App\Models\Category;
+use App\Models\Locale;
+use App\Models\Paragraph;
 use App\Models\Tag;
 use App\Registry\AiSettingsRegistry;
 use App\Repositories\ParagraphRepository;
@@ -39,21 +41,31 @@ class ClassificationService
         return $collection->get($result->content);
     }
 
-    public function suggestTagForArticle(Article $article, Collection $collection, string $description): ?Tag
+    public function suggestTagsForArticle(Article $article, Collection $collection, string $description): Collection
     {
         $collection = $collection->keyBy('slug');
 
         $result = $this->suggestTag($this->fetchArticleContent($article), $collection, $description);
 
+        $suggestedTags = collect();
+
         if ($result->content === 'none') {
-            return null;
+            return $suggestedTags;
         }
 
-        if (false === $collection->has($result->content)) {
-            throw new \RuntimeException("Can't resolve tag: {$result->content}, description: {$description}, Comments: {$result->comments}");
+        $tagSlugs = explode(',', $result->content);
+
+        foreach ($tagSlugs as $tagSlug) {
+            $tagSlug = trim($tagSlug);
+            if (false === $collection->has($tagSlug)) {
+                continue;
+                throw new \RuntimeException("Can't resolve tag: {$tagSlug}, description: {$description}, Comments: {$result->comments}");
+            }
+
+            $suggestedTags = $suggestedTags->add($collection->get($tagSlug));
         }
 
-        return $collection->get($result->content);
+        return $suggestedTags;
     }
 
     public function suggestCategory(ArticleContent $content, Collection $categories): ClassificationResult
@@ -115,24 +127,37 @@ USER;
     public function suggestTag(ArticleContent $content, Collection $tags, string $description): ClassificationResult
     {
         $system = <<<SYSTEM
-You are artificial intelligence the task of whom is assign tags for articles.
-You have strong experience with Linux operating systems, know a lot about open source software movement.
-User provides you article title and its annotation and wrapping up section.
-You should choose most suitable tag from list below.
-Choose tag only between tags provided in the list, do not create your own tags if they not listed.
-If none of the provided tags suitable, return "none".
-After choosing tag, take step back and think does it comply with focus question.
+You are an AI specialized in accurately assigning tags to articles about Linux operating systems and open source software.
 
-Output final result only as a json object with two fields.
-The first field named slug with the tag slug, and the second field named comments if you need to add any notices.
-Output only JSON
+## Your Task
+Assign tags from a provided list to articles based on their title, annotation, and content summary. You must be highly selective and only assign tags that genuinely match the article's content.
+
+## Critical Rules
+1. **Only use tags from the provided list** - Never create or suggest new tags
+2. **Match content precisely** - A tag must directly relate to the article's main topics or technologies discussed
+3. **Be conservative** - When in doubt, don't assign a tag. It's better to assign fewer accurate tags than many loosely related ones
+
+## Process
+1. **Read carefully**: Analyze the article title, annotation, and summary thoroughly
+2. **Identify core topics**: What are the 2-3 main subjects discussed?
+3. **Match against list**: Check if any provided tags directly correspond to these core topics
+4. **Validate relevance**: For each potential tag, ask: "Is this tag central to what this article discusses?"
+5. **Final review**: Ensure each selected tag is mentioned or clearly implied in the provided content
+
+## Output Format
+Respond only with valid JSON:
+```json
+{
+  "slugs": "tag1,tag2,tag3" OR "none",
+  "comments": "Brief explanation of your reasoning or 'none' if no clarification needed"
+}
 SYSTEM;
-        $system .= "\nFOCUS QUESTION: " . $description . "\n";
+        $system .= "\nCATEGORY: " . $description . "\n";
 
         $system .= "TAGS:\n";
 
         foreach ($tags as $tag) {
-            $system .= $tag->slug . "\n";
+            $system .= $tag->slug . ' - ' . $tag->description . "\n";
         }
 
         $system .= "INPUT:\n";
@@ -144,6 +169,8 @@ SYSTEM;
 Title: {$content->title}
 Annotation: {$content->annotation}
 Wrapping Up: {$content->warpingUp}
+Table Of Contents:
+{$content->tableOfContent}
 USER;
         $messages->addUserMessage($user);
 
@@ -161,12 +188,12 @@ USER;
             throw new AiDeserializationException(json_last_error(), json_last_error_msg());
         }
 
-        if (isset($data['slug']) === false) {
+        if (isset($data['slugs']) === false) {
             throw new AiException('Unexpected AI response! ' . print_r($data, true));
         }
 
         return new ClassificationResult(
-            content: $data['slug'],
+            content: $data['slugs'],
             comments: $data['comments'] ?? '',
             inputTokens: $result->inputTokens,
             outputTokens: $result->outputTokens
@@ -191,12 +218,17 @@ USER;
             $wrapup = "";
         }
 
+        $tableOfContents = $this->paragraphs->getAllHeadingsForArticle($article)
+            ->pluck('content')
+            ->toArray();
+
         $annotation = implode("\n", $paragraphsList);
 
         return new ArticleContent(
             title: $title,
             annotation: $annotation,
             warpingUp: $wrapup,
+            tableOfContent: implode("\n", $tableOfContents)
         );
     }
 }

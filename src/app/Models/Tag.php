@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $slug
@@ -31,6 +33,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Tag extends Model
 {
     use HasFactory;
+    use HasUuids;
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(TagCategory::class, 'category_id', 'id');
+    }
 
     public function localizations(): HasMany
     {

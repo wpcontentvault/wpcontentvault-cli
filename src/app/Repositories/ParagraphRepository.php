@@ -64,6 +64,17 @@ class ParagraphRepository extends AbstractRepository
             ->first();
     }
 
+    public function getAllHeadingsForArticle(Article $article): Collection
+    {
+        return $this->createQuery()
+            ->where('article_id', $article->getKey())
+            ->with('translations')
+            ->where('is_stale', false)
+            ->orderBy('order', 'desc')
+            ->where('type', GutenbergBlogTypeEnum::HEADING->value)
+            ->get();
+    }
+
     public function getParagraphsAfter(Article $article, Paragraph $paragraph, ?int $limit = null): Collection
     {
         return $this->createQuery()
