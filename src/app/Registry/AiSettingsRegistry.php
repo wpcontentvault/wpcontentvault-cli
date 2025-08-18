@@ -67,7 +67,7 @@ class AiSettingsRegistry
         $classificationProvider = $this->providers[AiProviderEnum::from($aiConfig['settings']['classification']['provider'])->value];
         $classificationModelName = AiModelEnum::from($aiConfig['settings']['classification']['model']);
         if (empty($classificationProvider->getModelName($classificationModelName))) {
-            throw new RuntimeException("Specified provider does not support model {$classificationProvider->value}.");
+            throw new RuntimeException("Specified provider does not support model {$classificationModelName->value}.");
         }
 
         $this->classificationConfiguration = new AiRequestConfiguration(

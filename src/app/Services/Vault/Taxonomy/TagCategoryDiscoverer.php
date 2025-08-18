@@ -8,6 +8,8 @@ use App\Context\Taxonomy\TagAttrs;
 use App\Context\Taxonomy\TagMeta;
 use App\Models\TagCategory;
 use App\Repositories\LocaleRepository;
+use App\Repositories\TagCategoryRepository;
+use App\Services\Database\Cleaner\TagCategoryCleaner;
 use App\Services\Vault\Meta\TagMetaManager;
 use App\Services\Vault\VaultConfigLoader;
 use App\Services\Vault\VaultPathResolver;
@@ -20,6 +22,8 @@ class TagCategoryDiscoverer
         private VaultConfigLoader $configLoader,
         private TagMetaManager    $metadataManager,
         private LocaleRepository  $locales,
+        private TagCategoryRepository $tagCategories,
+        private TagCategoryCleaner $categoryCleaner,
     ) {}
 
     public function discoverTagCategories(): void
@@ -30,24 +34,30 @@ class TagCategoryDiscoverer
 
         $locales = $this->locales->getAllLocales();
 
-        foreach ($categories as $category) {
-            $this->categories[$category['slug']] = $category['description'];
+        $oldCategoryIds = $this->tagCategories->getAllTagCategories()->pluck('id')->toArray();
+        $newCategoryIds = [];
 
-            foreach ($categories as $categoryData) {
-                $category = TagCategory::query()->where('slug', $categoryData['slug'])->first();
+        foreach ($categories as $categoryData) {
+            $category = TagCategory::query()->where('slug', $categoryData['slug'])->first();
 
-                if (null !== $category) {
-                    $category->description = $categoryData['description'];
-                } else {
-                    $category = new TagCategory();
-                    $category->slug = $categoryData['slug'];
-                    $category->description = $categoryData['description'];
-                }
-                $category->save();
-
-                $this->populateTagsForCategory($category, $locales, $categoryData['tags'] ?? []);
+            if (null !== $category) {
+                $category->is_hidden = $categoryData['is_hidden'] ?? false;
+            } else {
+                $category = new TagCategory();
+                $category->slug = $categoryData['slug'];
+                $category->is_hidden = $categoryData['is_hidden'] ?? false;
             }
+
+            $newCategoryIds[] = $category->getKey();
+
+            $category->save();
+
+            $this->populateTagsForCategory($category, $locales, $categoryData['tags'] ?? []);
         }
+
+        $removedCategories = array_diff($oldCategoryIds, $newCategoryIds);
+
+        $this->categoryCleaner->markCategoriesAsStale($removedCategories);
     }
 
     private function populateTagsForCategory(TagCategory $category, Collection $locales, array $tags): void

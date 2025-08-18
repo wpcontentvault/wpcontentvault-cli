@@ -16,7 +16,8 @@ return new class extends Migration
         Schema::create('tag_categories', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('slug');
-            $table->string('description');
+            $table->boolean('is_hidden')->default(false);
+            $table->boolean('is_stale')->default(false);
             $table->timestamps();
         });
     }

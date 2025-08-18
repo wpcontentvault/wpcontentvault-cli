@@ -4,82 +4,90 @@ declare(strict_types=1);
 
 namespace App\Services\Classification;
 
+use App\Events\ArticleTagsUpdated;
 use App\Models\Article;
 use App\Models\Locale;
 use App\Models\Tag;
-use App\Registry\TagsRegistry;
-use App\Repositories\TagCategoryRepository;
 use App\Repositories\TagRepository;
 use App\Services\Console\ApplicationOutput;
 use App\Services\Vault\Manifest\ManifestNameResolver;
 use App\Services\Vault\Manifest\V1\ManifestUpdater;
+use Illuminate\Events\Dispatcher;
 use Illuminate\Support\Collection;
 
 class ArticleTagger
 {
-    private ?Collection $categoriesList = null;
+    private ?Collection $tagsList = null;
 
     public function __construct(
-        private TagCategoryRepository $categories,
+        private TagRepository         $tags,
         private ClassificationService $classificationService,
         private ManifestNameResolver  $manifestNameResolver,
         private ManifestUpdater       $manifestUpdater,
-        private ApplicationOutput     $applicationOutput
+        private ApplicationOutput     $applicationOutput,
+        private Dispatcher            $dispatcher,
     ) {}
 
     public function updateTagsForArticle(Article $article): void
     {
-        if (null === $this->categoriesList) {
-            $this->categoriesList = $this->categories->getAllTagCategories();
+        if (null === $this->tagsList) {
+            $this->tagsList = $this->tags->getMatchableTags();
         }
 
-        $tags = [];
-
-        foreach ($this->categoriesList as $category) {
-            $tagsInCategory = $category->tags;
-
-            if(count($tagsInCategory) === 0) {
-                throw new \RuntimeException("No tags in category $category->slug");
-            }
-
-            $suggestedTags = $this->suggestTagsForArticleByTagCategory(
-                $article,
-                $category->slug,
-                $tagsInCategory
-            );
-
-            foreach($suggestedTags as $tag) {
-                if (null !== $tag) {
-                    $this->applicationOutput->info("Tag {$tag->slug} suggested for {$category->slug}");
-                } else {
-                    $this->applicationOutput->info("No tags suggested for {$category->slug}");
-                }
-
-                if (null !== $tag) {
-                    $tags[] = $tag;
-                }
-            }
-        }
+        $suggestedTags = $this->suggestTagsForArticle(
+            $article,
+        );
 
         foreach ($article->localizations as $articleLocalization) {
             if (null === $articleLocalization) {
                 continue;
             }
 
-            $localizedTags = $this->getTagLocalizationsForLocale($tags, $articleLocalization->locale);
+            $localizedTags = $this->getTagLocalizationsForLocale($suggestedTags, $articleLocalization->locale);
 
             $name = $this->manifestNameResolver->resolveName($article, $articleLocalization->locale);
 
             $this->manifestUpdater->updateTags($article->path, $name, $localizedTags);
+
+            $this->dispatcher->dispatch(new ArticleTagsUpdated($article->external_id, $article->path, $name));
         }
+
     }
 
-    public function suggestTagsForArticleByTagCategory(Article $article, string $description, Collection $tags): Collection
+    public function suggestTagsForArticle(Article $article): Collection
     {
-        return $this->classificationService->suggestTagsForArticle($article, $tags, $description);
+        $tagCategories = $this->tagsList->groupBy('category');
+        $tagsCollection = $this->tagsList->keyBy('slug');
+
+        $tagList = "";
+        foreach ($tagCategories as $categorySlug => $tags) {
+            $tagList .= $categorySlug . ":\n";
+            foreach ($tags as $tag) {
+                $tagList .= '- ' . $tag->slug . ' - ' . $tag->description . "\n";
+            }
+        }
+
+        $suggestedCategories = $this->classificationService->suggestTagsForArticle($article, $tagList);
+
+        $suggestedTags = [];
+
+        foreach ($suggestedCategories as $tagCategory => $suggestedTagSlugs) {
+            foreach ($suggestedTagSlugs as $suggestedTagSlug) {
+                if (false === $tagsCollection->has($suggestedTagSlug)) {
+                    $this->applicationOutput->warning("AI suggested not existent tag $suggestedTagSlug for $tagCategory");
+
+                    continue;
+                }
+                $suggestedTags[] = $tagsCollection->get($suggestedTagSlug);
+
+                $this->applicationOutput->info("Tag $suggestedTagSlug suggested for $tagCategory");
+            }
+        }
+
+        return collect($suggestedTags);
     }
 
-    private function getTagLocalizationsForLocale(array $tags, Locale $locale): Collection
+    private function getTagLocalizationsForLocale(Collection $tags, Locale $locale): Collection
     {
         $filtered = collect();
 

@@ -82,6 +82,7 @@ class ParagraphRepository extends AbstractRepository
             ->with('translations')
             ->where('is_stale', false)
             ->where('order', '>', $paragraph->order)
+            ->where('type', GutenbergBlogTypeEnum::PARAGRAPH->value)
             ->orderBy('order', 'desc')
             ->when($limit !== null, function (Builder $query) use ($limit) {
                 $query->limit($limit);

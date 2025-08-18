@@ -5,15 +5,14 @@ declare(strict_types=1);
 namespace App\Services\Classification;
 
 use App\Context\AI\Chat\ChatMessagesBag;
-use App\Context\AI\ClassificationResult;
+use App\Context\AI\SelectCategoryResult;
+use App\Context\AI\SelectTagsResult;
 use App\Context\AI\Tools\ToolsCollection;
 use App\Context\Classification\ArticleContent;
 use App\Exceptions\AiDeserializationException;
 use App\Exceptions\AiException;
 use App\Models\Article;
 use App\Models\Category;
-use App\Models\Locale;
-use App\Models\Paragraph;
 use App\Models\Tag;
 use App\Registry\AiSettingsRegistry;
 use App\Repositories\ParagraphRepository;
@@ -41,34 +40,28 @@ class ClassificationService
         return $collection->get($result->content);
     }
 
-    public function suggestTagsForArticle(Article $article, Collection $collection, string $description): Collection
+    public function suggestTagsForArticle(Article $article, string $tagsList): array
     {
-        $collection = $collection->keyBy('slug');
+        $result = $this->suggestTag($this->fetchArticleContent($article), $tagsList);
 
-        $result = $this->suggestTag($this->fetchArticleContent($article), $collection, $description);
-
-        $suggestedTags = collect();
-
-        if ($result->content === 'none') {
-            return $suggestedTags;
-        }
-
-        $tagSlugs = explode(',', $result->content);
-
-        foreach ($tagSlugs as $tagSlug) {
-            $tagSlug = trim($tagSlug);
-            if (false === $collection->has($tagSlug)) {
+        $categories = [];
+        foreach ($result->tags as $category => $tags) {
+            if ($tags === 'none') {
                 continue;
-                throw new \RuntimeException("Can't resolve tag: {$tagSlug}, description: {$description}, Comments: {$result->comments}");
             }
 
-            $suggestedTags = $suggestedTags->add($collection->get($tagSlug));
+            if (false === is_array($tags)) {
+                $tags = explode(',', $tags);
+            }
+            $categories[$category] = array_map(function ($tagSlug) {
+                return trim($tagSlug);
+            }, $tags);
         }
 
-        return $suggestedTags;
+        return $categories;
     }
 
-    public function suggestCategory(ArticleContent $content, Collection $categories): ClassificationResult
+    public function suggestCategory(ArticleContent $content, Collection $categories): SelectCategoryResult
     {
         $system = <<<SYSTEM
 You are artificial intelligence the task of whom is categorize articles.
@@ -116,7 +109,7 @@ USER;
             throw new AiException('Unexpected AI response! ' . print_r($data, true));
         }
 
-        return new ClassificationResult(
+        return new SelectCategoryResult(
             content: $data['slug'],
             comments: $data['comments'] ?? '',
             inputTokens: $result->inputTokens,
@@ -124,46 +117,36 @@ USER;
         );
     }
 
-    public function suggestTag(ArticleContent $content, Collection $tags, string $description): ClassificationResult
+    public function suggestTag(ArticleContent $content, string $tagsList): SelectTagsResult
     {
         $system = <<<SYSTEM
-You are an AI specialized in accurately assigning tags to articles about Linux operating systems and open source software.
+You are artificial intelligence the task of whom is assign tags for articles.
+You have strong experience with Linux operating systems, know a lot about open source software movement.
+The tag assigning process is split by steps. You will choose tags only for a specific tag category.
+User provides you tags list, article title, annotation table of contents and wrapping up section.
+You can choose none, one or multiple tags suitable for article from the provided list.
+Analyze provided parts of article and think which tags from the list are most suitable.
+Repeat that for each category.
+If none of the provided tags suitable, return "none".
+Tags in the list split by the category for better convenience.
+Try to find suitable tag for each tag category.
 
-## Your Task
-Assign tags from a provided list to articles based on their title, annotation, and content summary. You must be highly selective and only assign tags that genuinely match the article's content.
+Output final result only as a json object with three fields.
+The first field named explanation which contains explanation why you have chosen those tags for each category.
+The second field named slugs with the tag slugs.
+The third field named comments if you need to add any notices.
 
-## Critical Rules
-1. **Only use tags from the provided list** - Never create or suggest new tags
-2. **Match content precisely** - A tag must directly relate to the article's main topics or technologies discussed
-3. **Be conservative** - When in doubt, don't assign a tag. It's better to assign fewer accurate tags than many loosely related ones
-
-## Process
-1. **Read carefully**: Analyze the article title, annotation, and summary thoroughly
-2. **Identify core topics**: What are the 2-3 main subjects discussed?
-3. **Match against list**: Check if any provided tags directly correspond to these core topics
-4. **Validate relevance**: For each potential tag, ask: "Is this tag central to what this article discusses?"
-5. **Final review**: Ensure each selected tag is mentioned or clearly implied in the provided content
-
-## Output Format
-Respond only with valid JSON:
-```json
-{
-  "slugs": "tag1,tag2,tag3" OR "none",
-  "comments": "Brief explanation of your reasoning or 'none' if no clarification needed"
-}
+The explanation field should contain an array where key is tag category and value is explanation
+The slugs field should contain an array where the key is tag category and values tag slugs related to that category separated by comma.
+Output only JSON
 SYSTEM;
-        $system .= "\nCATEGORY: " . $description . "\n";
-
-        $system .= "TAGS:\n";
-
-        foreach ($tags as $tag) {
-            $system .= $tag->slug . ' - ' . $tag->description . "\n";
-        }
-
-        $system .= "INPUT:\n";
 
         $messages = new ChatMessagesBag();
         $messages->setSystemMessage($system);
+
+        $tags = "\nTAGS:\n";
+        $tags .= $tagsList;
+        $messages->addUserMessage($tags);
 
         $user = <<<USER
 Title: {$content->title}
@@ -182,18 +165,18 @@ USER;
         );
 
         $data = json_decode($result->content, true);
-
+        dump($data);
         if ($data === null) {
             dump($result->content);
             throw new AiDeserializationException(json_last_error(), json_last_error_msg());
         }
 
-        if (isset($data['slugs']) === false) {
+        if (isset($data['slugs']) === false || false === is_array($data['slugs'])) {
             throw new AiException('Unexpected AI response! ' . print_r($data, true));
         }
 
-        return new ClassificationResult(
-            content: $data['slugs'],
+        return new SelectTagsResult(
+            tags: $data['slugs'],
             comments: $data['comments'] ?? '',
             inputTokens: $result->inputTokens,
             outputTokens: $result->outputTokens

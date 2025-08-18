@@ -21,6 +21,16 @@ class TagRepository extends AbstractRepository
             ->get();
     }
 
+    public function getMatchableTags(): Collection
+    {
+        return $this->createQuery()
+            ->where('is_stale', false)
+            ->whereHas('category', function (Builder $query) {
+                $query->where('is_hidden', false);
+            })
+            ->get();
+    }
+
     public function findTagBySlug(string $slug): ?Tag
     {
         return $this->createQuery()

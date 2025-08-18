@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Factories\Ai;
 
+use App\Configuration\AI\Models\Classification\ClassificationClaude35Configuration;
+use App\Configuration\AI\Models\Classification\ClassificationDeepseekR1Configuration;
 use App\Configuration\AI\Models\Classification\ClassificationGemma3Configuration;
 use App\Configuration\AI\Models\EmptyConfiguration;
 use App\Configuration\AI\Models\Translation\TranslationClaude35SonnetConfiguration;
@@ -32,8 +34,10 @@ class AiModelConfigurationFactory
     public function makeClassificationConfiguration(AiModelEnum $modelName): AiModelConfigurationInterface
     {
         return match ($modelName) {
-            AiModelEnum::GEMMA_3 => new ClassificationGemma3Configuration,
-            default => throw new RuntimeException("Specified model {$modelName->value} does not have configuration for embedding!"),
+            AiModelEnum::GEMMA_3 => new ClassificationGemma3Configuration(),
+            AiModelEnum::CLAUSE_SONNET_3_5 => new ClassificationClaude35Configuration(),
+            AiModelEnum::DEEPSEEK_R1 => new ClassificationDeepseekR1Configuration(),
+            default => throw new RuntimeException("Specified model {$modelName->value} does not have configuration for classification!"),
         };
     }
 }
