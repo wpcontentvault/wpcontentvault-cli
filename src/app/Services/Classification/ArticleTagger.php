@@ -43,11 +43,9 @@ class ArticleTagger
                 continue;
             }
 
-            $localizedTags = $this->getTagLocalizationsForLocale($suggestedTags, $articleLocalization->locale);
-
             $name = $this->manifestNameResolver->resolveName($article, $articleLocalization->locale);
 
-            $this->manifestUpdater->updateTags($article->path, $name, $localizedTags);
+            $this->manifestUpdater->updateTags($article->path, $name, $suggestedTags->toArray());
 
             $this->dispatcher->dispatch(new ArticleTagsUpdated($article->external_id, $article->path, $name));
         }
@@ -85,17 +83,5 @@ class ArticleTagger
         }
 
         return collect($suggestedTags);
-    }
-
-    private function getTagLocalizationsForLocale(Collection $tags, Locale $locale): Collection
-    {
-        $filtered = collect();
-
-        foreach ($tags as $tag) {
-            /** @var Tag $tag */
-            $filtered->add($tag->findLocalizationByLocale($locale));
-        }
-
-        return $filtered;
     }
 }

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Services\Vault\Manifest\V1;
 
 use App\Models\Category;
+use App\Models\Locale;
+use App\Models\Tag;
 use DateTimeInterface;
 use RuntimeException;
 
@@ -38,7 +40,9 @@ class ManifestUpdater
     {
         $json = $this->deserialize($path, $name);
 
-        $json['category'] = $category->slug;
+        $locale = Locale::query()->where('code', $json['locale'])->first();
+
+        $json['category'] = $category->findLocalizationByLocale($locale)->name;
 
         $this->serialize($path, $name, $json);
     }
@@ -47,7 +51,14 @@ class ManifestUpdater
     {
         $json = $this->deserialize($path, $name);
 
-        $json['tags'] = collect($tags)->pluck('slug')->toArray();
+        $locale = Locale::query()->where('code', $json['locale'])->first();
+
+        $json['tags'] = collect($tags)
+            ->map(function (Tag $tag) use ($locale) {
+                return $tag->findLocalizationByLocale($locale)->name;
+            })
+            ->pluck('name')
+            ->toArray();
 
         $this->serialize($path, $name, $json);
 

@@ -30,4 +30,15 @@ class CategoryResolver
 
         return $localization->category;
     }
+
+    public function resolveCategoryBySlug(?string $categorySlug): ?Category
+    {
+        if ($categorySlug === null) {
+            return null;
+        }
+
+        return Category::query()
+            ->where('slug', $categorySlug)
+            ->first();
+    }
 }

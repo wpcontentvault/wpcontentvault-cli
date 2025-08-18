@@ -46,7 +46,7 @@ class ArticleCategorizer
 
             $name = $this->manifestNameResolver->resolveName($article, $articleLocalization->locale);
 
-            $this->manifestUpdater->updateCategory($article->path, $name, $localization);
+            $this->manifestUpdater->updateCategory($article->path, $name, $category);
         }
     }
 }

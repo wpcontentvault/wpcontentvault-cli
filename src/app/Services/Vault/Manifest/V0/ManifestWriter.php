@@ -10,19 +10,11 @@ class ManifestWriter
 {
     public function writeManifest(string $path, string $name, PostMeta $meta): void
     {
-        if ($name === 'original') {
-            $sharedData = [
-                'version' => '2',
-                'category' => $meta->category?->slug,
-                'tags' => collect($meta->tags)->pluck('slug')->toArray(),
-            ];
-
-            file_put_contents(
-                $path . '/attrs.json',
-                json_encode($sharedData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
-            );
+        if ($meta->category !== null) {
+            $categoryLocalization = $meta->category->findLocalizationByLocale($meta->locale);
+        } else {
+            $categoryLocalization = null;
         }
-
 
         $data = [
             'version' => 1,
@@ -34,11 +26,12 @@ class ManifestWriter
             'modified_at' => $meta->modifiedAt?->format('Y-m-d H:i:s'),
             'url' => $meta->url,
             'external_id' => $meta->externalId,
-
+            'category' => $categoryLocalization?->name,
+            'tags' => $meta->tags,
         ];
 
         file_put_contents(
-            $path . '/' . $name . '.json',
+            $path.'/'.$name.'.json',
             json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
         );
     }
