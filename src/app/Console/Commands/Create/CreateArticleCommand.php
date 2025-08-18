@@ -9,7 +9,7 @@ use App\Context\Markdown\PostMeta;
 use App\Events\ArticleCreated;
 use App\Events\Vault\VaultCreated;
 use App\Repositories\LocaleRepository;
-use App\Services\Vault\Manifest\V1\ManifestWriter;
+use App\Services\Vault\Manifest\V2\ManifestWriter;
 use App\Services\Vault\VaultPathResolver;
 
 use Illuminate\Events\Dispatcher;

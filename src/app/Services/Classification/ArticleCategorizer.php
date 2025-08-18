@@ -8,7 +8,7 @@ use App\Models\Article;
 use App\Repositories\CategoryRepository;
 use App\Services\Console\ApplicationOutput;
 use App\Services\Vault\Manifest\ManifestNameResolver;
-use App\Services\Vault\Manifest\V1\ManifestUpdater;
+use App\Services\Vault\Manifest\V2\ManifestUpdater;
 use Illuminate\Support\Collection;
 
 class ArticleCategorizer

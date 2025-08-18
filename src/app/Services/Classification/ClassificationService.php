@@ -165,7 +165,6 @@ USER;
         );
 
         $data = json_decode($result->content, true);
-        dump($data);
         if ($data === null) {
             dump($result->content);
             throw new AiDeserializationException(json_last_error(), json_last_error_msg());

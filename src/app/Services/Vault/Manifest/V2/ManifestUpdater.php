@@ -2,11 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Services\Vault\Manifest\V1;
+namespace App\Services\Vault\Manifest\V2;
 
 use App\Models\Category;
-use App\Models\Locale;
-use App\Models\Tag;
 use DateTimeInterface;
 use RuntimeException;
 
@@ -38,29 +36,20 @@ class ManifestUpdater
 
     public function updateCategory(string $path, string $name, Category $category): void
     {
-        $json = $this->deserialize($path, $name);
+        $json = $this->deserializeShared($path);
 
-        $locale = Locale::query()->where('code', $json['locale'])->first();
+        $json['category'] = $category->slug;
 
-        $json['category'] = $category->findLocalizationByLocale($locale)->name;
-
-        $this->serialize($path, $name, $json);
+        $this->serializeShared($path, $json);
     }
 
     public function updateTags(string $path, string $name, array $tags): void
     {
-        $json = $this->deserialize($path, $name);
+        $json = $this->deserializeShared($path);
 
-        $locale = Locale::query()->where('code', $json['locale'])->first();
+        $json['tags'] = collect($tags)->pluck('slug')->toArray();
 
-        $json['tags'] = collect($tags)
-            ->map(function (Tag $tag) use ($locale) {
-                return $tag->findLocalizationByLocale($locale)->name;
-            })
-            ->pluck('name')
-            ->toArray();
-
-        $this->serialize($path, $name, $json);
+        $this->serializeShared($path, $json);
 
     }
 
@@ -76,6 +65,25 @@ class ManifestUpdater
     private function serialize(string $path, string $name, array $json): void
     {
         $fileName = $path . '/' . $name . '.json';
+
+        file_put_contents(
+            $fileName,
+            json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
+        );
+    }
+
+    private function deserializeShared(string $path): array
+    {
+        $fileName = $path . '/attrs.json';
+        $data = file_get_contents($fileName);
+        $json = json_decode($data, true);
+
+        return $json;
+    }
+
+    private function serializeShared(string $path, array $json): void
+    {
+        $fileName = $path . '/attrs.json';
 
         file_put_contents(
             $fileName,

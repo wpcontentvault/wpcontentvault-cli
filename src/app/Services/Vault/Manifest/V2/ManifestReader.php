@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Services\Vault\Manifest\V1;
+namespace App\Services\Vault\Manifest\V2;
 
 use App\Context\Markdown\PostMeta;
 use App\Repositories\LocaleRepository;
@@ -30,7 +30,10 @@ class ManifestReader
         $data = file_get_contents($path . '/' . $name . '.json');
         $json = json_decode($data, true);
 
-        assert(intval($json['version'] ?? null) == 1);
+        $sharedData = file_get_contents($path . '/attrs.json');
+        $sharedJson = json_decode($sharedData, true);
+
+        //assert(intval($json['version'] ?? null) == 2);
 
         $locale = $this->locales->findLocaleByCode($json['locale']);
         assert($locale !== null);
@@ -51,15 +54,12 @@ class ManifestReader
 
         $serializedId = $this->articleIdMeta->readSerializedId($path);
 
-        $category = $this->categoryResolver->resolveCategoryByName($json['category'] ?? null, $locale);
+        $category = $this->categoryResolver->resolveCategoryBySlug($sharedJson['category'] ?? null);
 
         $tags = [];
 
-        foreach ($json['tags'] ?? [] as $tag) {
-            $resolvedTag = $this->tagResolver->resolveTagByName($tag, $locale);
-            if (null !== $resolvedTag) {
-                $tags[] = $resolvedTag;
-            }
+        foreach ($sharedJson['tags'] ?? [] as $tag) {
+            $tags[] = $this->tagResolver->resolveTagBySlug($tag);
         }
 
         return new PostMeta(

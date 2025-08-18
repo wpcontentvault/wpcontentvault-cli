@@ -11,8 +11,8 @@ use App\Services\Database\Resolver\ArticleResolver;
 use App\Services\Database\Serializer\ArticleSerializer;
 use App\Services\Vault\Discovery\ArticleContextDiscovery;
 use App\Services\Vault\Discovery\ArticleLocalizationsDiscovery;
-use App\Services\Vault\Manifest\V1\ManifestReader;
-use App\Services\Vault\Manifest\V1\ManifestUpdater;
+use App\Services\Vault\Manifest\V2\ManifestReader;
+use App\Services\Vault\Manifest\V2\ManifestUpdater;
 use App\Services\Vault\MarkdownLoader;
 use RuntimeException;
 

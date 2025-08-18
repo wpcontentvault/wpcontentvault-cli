@@ -6,7 +6,7 @@ namespace App\Services\Wordpress;
 
 use App\Registry\SitesRegistry;
 use App\Services\Console\ApplicationOutput;
-use App\Services\Vault\Manifest\V1\ManifestReader;
+use App\Services\Vault\Manifest\V2\ManifestReader;
 
 class PostMetaUpdater
 {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Exporting;
 
 use App\Registry\SitesRegistry;
-use App\Services\Vault\Manifest\V1\ManifestReader;
+use App\Services\Vault\Manifest\V2\ManifestReader;
 use App\Services\Wordpress\PreviewUploader;
 
 class PreviewExporter

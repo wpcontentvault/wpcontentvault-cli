@@ -6,7 +6,7 @@ namespace App\Services\Vault\Article;
 
 use App\Context\Markdown\PostMeta;
 use App\Services\Importing\ImageDownloader;
-use App\Services\Vault\Manifest\V1\ManifestWriter;
+use App\Services\Vault\Manifest\V2\ManifestWriter;
 use App\Services\Vault\Meta\ImportChecksumMeta;
 use RuntimeException;
 

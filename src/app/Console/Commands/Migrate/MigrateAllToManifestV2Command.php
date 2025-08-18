@@ -7,17 +7,17 @@ namespace App\Console\Commands\Migrate;
 use App\Console\Commands\AbstractApplicationCommand;
 use App\Repositories\ArticleRepository;
 use App\Services\Vault\Manifest\ManifestNameResolver;
-use App\Services\Vault\Manifest\V1\ManifestReader;
+use App\Services\Vault\Manifest\V2\ManifestReader;
 use App\Services\Vault\Manifest\V2\ManifestWriter;
 
-class MigrateToManifestV2Command extends AbstractApplicationCommand
+class MigrateAllToManifestV2Command extends AbstractApplicationCommand
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'migrate-v2 {--year=} {--continue=}';
+    protected $signature = 'migrate-all-v2 {--year=} {--continue=}';
 
     /**
      * The console command description.

@@ -11,8 +11,8 @@ use App\Models\Locale;
 use App\Registry\SitesRegistry;
 use App\Repositories\LocaleRepository;
 use App\Services\Vault\Manifest\ManifestNameResolver;
-use App\Services\Vault\Manifest\V1\ManifestReader;
-use App\Services\Vault\Manifest\V1\ManifestUpdater;
+use App\Services\Vault\Manifest\V2\ManifestReader;
+use App\Services\Vault\Manifest\V2\ManifestUpdater;
 use App\Services\Wordpress\PostCreator;
 
 class ArticleLocalizationsDiscovery

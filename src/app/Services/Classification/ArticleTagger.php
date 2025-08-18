@@ -11,7 +11,7 @@ use App\Models\Tag;
 use App\Repositories\TagRepository;
 use App\Services\Console\ApplicationOutput;
 use App\Services\Vault\Manifest\ManifestNameResolver;
-use App\Services\Vault\Manifest\V1\ManifestUpdater;
+use App\Services\Vault\Manifest\V2\ManifestUpdater;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Support\Collection;
 
@@ -76,7 +76,13 @@ class ArticleTagger
 
                     continue;
                 }
-                $suggestedTags[] = $tagsCollection->get($suggestedTagSlug);
+
+                //Filter duplicates
+                if(isset($suggestedTags[$suggestedTagSlug])) {
+                    continue;
+                }
+
+                $suggestedTags[$suggestedTagSlug] = $tagsCollection->get($suggestedTagSlug);
 
                 $this->applicationOutput->info("Tag $suggestedTagSlug suggested for $tagCategory");
             }
