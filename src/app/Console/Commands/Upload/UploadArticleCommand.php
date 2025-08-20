@@ -56,6 +56,7 @@ class UploadArticleCommand extends AbstractApplicationCommand
             $coverImporter->setCover($article->path, $name);
 
             $postMetaUpdater->updateTitleAndCategory($article->path, $name);
+            $postMetaUpdater->updateTags($article->path, $name);
         }
 
         $localizationBindingUpdater->updateLocalizationBindingsForArticle($article);

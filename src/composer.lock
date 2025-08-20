@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "156ab1369f97bc187d89abb9db86b0f1",
+    "content-hash": "ad785a14ff6c7dc1ff99c3815adc626a",
     "packages": [
         {
             "name": "brick/math",
@@ -4680,7 +4680,7 @@
             "dist": {
                 "type": "path",
                 "url": "extensions/losst-extension",
-                "reference": "8d36a52560e03b0423183971ccc60ead9e13f7d1"
+                "reference": "9c6720cbba62418712d9ea86f6140db96bad7a0d"
             },
             "type": "library",
             "extra": {
@@ -4740,7 +4740,7 @@
             ],
             "description": "Library for work with wpajaxconnector plugin",
             "transport-options": {
-                "symlink": false,
+                "symlink": true,
                 "relative": true
             }
         },

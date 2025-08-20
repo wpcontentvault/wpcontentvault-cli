@@ -6,7 +6,6 @@ namespace App\Services\Database\Cleaner;
 
 use App\Models\Tag;
 use App\Repositories\TagCategoryRepository;
-use App\Repositories\TagRepository;
 
 class TagCategoryCleaner
 {
@@ -17,7 +16,7 @@ class TagCategoryCleaner
     public function markCategoriesAsStale(array $ids): void
     {
         foreach ($ids as $id) {
-            $text = $this->categories->findTagCategoryBySlug($id);
+            $text = $this->categories->findTagCategoryByUuid($id);
             $text->is_stale = true;
             $text->save();
         }

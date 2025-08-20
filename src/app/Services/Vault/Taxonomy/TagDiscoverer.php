@@ -9,21 +9,20 @@ use App\Models\TagLocalization;
 use App\Repositories\LocaleRepository;
 use App\Repositories\TagRepository;
 use App\Services\Database\Cleaner\TagCleaner;
+use App\Services\Vault\Iterator\TagDirectoryIterator;
 use App\Services\Vault\Meta\TagMetaManager;
-use App\Services\Vault\VaultPathResolver;
 use Illuminate\Support\Collection;
-use Symfony\Component\Finder\Finder;
 
 class TagDiscoverer
 {
     private Collection $localesList;
 
     public function __construct(
-        private VaultPathResolver $pathResolver,
-        private TagMetaManager    $metadataManager,
-        private LocaleRepository  $locales,
-        private TagRepository     $tags,
-        private TagCleaner        $tagCleaner,
+        private TagDirectoryIterator $tagIterator,
+        private TagMetaManager       $metadataManager,
+        private LocaleRepository     $locales,
+        private TagRepository        $tags,
+        private TagCleaner           $tagCleaner,
     )
     {
         $this->localesList = $this->locales->getAllLocales();
@@ -31,18 +30,10 @@ class TagDiscoverer
 
     public function discoverAllTags(): void
     {
-        $finder = new Finder();
-        $finder->name('*')
-            ->notName('.')
-            ->notName('..');
-        $finder->sortByName();
-
-        $tagsPath = $this->pathResolver->getRoot() . 'tags/';
-
         $oldTagIds = $this->tags->getAllTags()->pluck('id')->toArray();
         $newTagIds = [];
 
-        foreach ($finder->directories()->in($tagsPath) as $dir) {
+        foreach ($this->tagIterator->getTagDirectories() as $dir) {
             /** @var \SplFileInfo $dir */
             $newTagIds[] = $this->discoverTagFromPath($dir->getBasename());
         }

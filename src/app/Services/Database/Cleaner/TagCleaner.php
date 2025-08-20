@@ -16,7 +16,7 @@ class TagCleaner
     public function markTagsAsStale(array $ids): void
     {
         foreach ($ids as $id) {
-            $text = $this->tags->findTagBySlug($id);
+            $text = $this->tags->findTagByUuid($id);
             $text->is_stale = true;
             $text->save();
         }

@@ -30,6 +30,13 @@ class TagCategoryRepository extends AbstractRepository
             ->get();
     }
 
+    public function findTagCategoryByUuid(string $id): ?TagCategory
+    {
+        return $this->createQuery()
+            ->where('id', $id)
+            ->first();
+    }
+
     public function findTagCategoryBySlug(string $slug): ?TagCategory
     {
         return $this->createQuery()

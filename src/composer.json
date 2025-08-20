@@ -80,7 +80,7 @@
             "type": "path",
             "url": "packages/wpajaxconnector-php",
             "options": {
-                "symlink": false
+                "symlink": true
             }
         },
         {

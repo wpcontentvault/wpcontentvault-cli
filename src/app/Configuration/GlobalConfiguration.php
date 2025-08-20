@@ -12,7 +12,7 @@ class GlobalConfiguration
 
     public bool $throwOnImageUpload = false;
 
-    public bool $dryRun = false;
+    public bool $updateTagIds = false;
 
     public function replaceImages(bool $flag = true): self
     {
@@ -24,6 +24,13 @@ class GlobalConfiguration
     public function updateImages(bool $flag = true): self
     {
         $this->updateImages = $flag;
+
+        return $this;
+    }
+
+    public function updateTagIds(bool $flag = true): self
+    {
+        $this->updateTagIds = $flag;
 
         return $this;
     }
@@ -48,5 +55,10 @@ class GlobalConfiguration
     public function shouldThrowOnImageUpload(): bool
     {
         return $this->throwOnImageUpload;
+    }
+
+    public function shouldUpdateTagIds(): bool
+    {
+        return $this->updateTagIds;
     }
 }
