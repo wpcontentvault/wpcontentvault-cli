@@ -1,5 +1,11 @@
 {
     "chmod": "0755",
+    "map": [
+        {
+            "from": "packages/wpajaxconnector-php",
+            "to": "vendor/wpajaxconnector-php"
+        }
+    ],
     "directories": [
         "app",
         "bootstrap",

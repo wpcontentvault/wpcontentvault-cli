@@ -7,6 +7,7 @@ namespace App\Console\Commands\Vault;
 use App\Console\Commands\AbstractApplicationCommand;
 use App\Models\Image;
 use App\Repositories\ArticleRepository;
+use App\Services\Database\Hasher\ImageHasher;
 use App\Services\Utils\StringUtils;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -33,6 +34,7 @@ class FixImageNamesCommand extends AbstractApplicationCommand
 
     public function handle(
         ArticleRepository $articles,
+        ImageHasher $imageHasher,
     ): int
     {
         //Image names in Wordpress (technically external_path) must be the same as in vault (technically in path field)
@@ -59,10 +61,11 @@ class FixImageNamesCommand extends AbstractApplicationCommand
                 $this->info("Image name mismatch: " . $imageFileName . ', ' . $image->path);
 
 
-                DB::transaction(function () use ($article, $image, $imageUrl, $imageFileName): void {
+                DB::transaction(function () use ($article, $image, $imageUrl, $imageFileName, $imageHasher): void {
                     $oldName = $image->path;
 
                     $image->path = $imageFileName;
+                    $image->hash = md5($imageFileName);
                     $image->save();
 
                     rename($article->path . '/' . $oldName, $article->path . '/' . $imageFileName);

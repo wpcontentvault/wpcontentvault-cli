@@ -12,6 +12,7 @@ use App\Context\AI\Responses\ToolCall;
 use App\Context\AI\Tools\ToolsCollection;
 use App\Enum\AI\FinishReason;
 use App\Exceptions\AIClientException;
+use App\Exceptions\AiException;
 use App\Services\AI\Client\OpenAiCompatibleClient;
 use App\Services\AI\Tools\ToolsCaller;
 use App\Services\Console\ApplicationOutput;
@@ -54,6 +55,12 @@ class OpenAiCompatibleService
     ): ChatCompletionResult
     {
         $messages = $messagesBag->toArray();
+
+        $messagesSize = mb_strlen(json_encode($messages, JSON_UNESCAPED_UNICODE));
+
+        if ($messagesSize > $aiConfig->getModel()->getSafeContentLength()) {
+            throw new AiException("Request size too large! {$messagesSize} characters.");
+        }
 
         $inputTokens = 0;
         $outputTokens = 0;

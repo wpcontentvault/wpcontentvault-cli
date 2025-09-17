@@ -11,10 +11,10 @@ use App\Services\Wordpress\PreviewUploader;
 class PreviewExporter
 {
     public function __construct(
-        private SitesRegistry $sites,
-        private ManifestReader $manifestReader,
+        private SitesRegistry       $sites,
+        private ManifestReader      $manifestReader,
         private AttachedImageFinder $imageFinder,
-        private PreviewUploader $uploader,
+        private PreviewUploader     $uploader,
     ) {}
 
     public function setCover(string $path, string $name): void
@@ -23,11 +23,16 @@ class PreviewExporter
         $connector = $this->sites->getSiteConnectorByLocale($meta->locale);
         $this->imageFinder->replace($meta->externalId, $meta->locale);
 
-        $coverName = 'preview-'.$meta->externalId.'.png';
+        $coverName = 'preview-' . $meta->externalId . '.png';
+
+        $vaultFilePath = $path . 'cover/original.png';
+        if (file_exists($path . 'cover/' . $name . '.png')) {
+            $vaultFilePath = $path . 'cover/' . $name . '.png';
+        }
 
         if ($this->imageFinder->hasImage($coverName) === false) {
             $attachment = $this->uploader->uploadPreview(
-                $path.'cover/original.png',
+                $vaultFilePath,
                 $meta->externalId,
                 $coverName,
                 $connector
@@ -36,7 +41,7 @@ class PreviewExporter
             $attachment = $this->imageFinder->findImageByFileName($coverName);
 
             $this->uploader->updatePreview(
-                $path.'cover/original.png',
+                $vaultFilePath,
                 $attachment->externalId,
                 $coverName,
                 $connector,

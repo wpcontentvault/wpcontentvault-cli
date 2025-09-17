@@ -8,6 +8,7 @@ use App\Console\Commands\AbstractApplicationCommand;
 use App\Repositories\ArticleRepository;
 use App\Services\Classification\ArticleCategorizer;
 use App\Services\Classification\ArticleTagger;
+use App\Services\Vault\Manifest\V2\ManifestReader;
 
 class SuggestTagsForAllArticlesCommand extends AbstractApplicationCommand
 {
@@ -16,7 +17,7 @@ class SuggestTagsForAllArticlesCommand extends AbstractApplicationCommand
      *
      * @var string
      */
-    protected $signature = 'suggest-tags-for-articles {--year=} {--continue=}';
+    protected $signature = 'suggest-tags-for-articles {--year=} {--continue=} {--skip-not-empty}';
 
     /**
      * The console command description.
@@ -29,12 +30,14 @@ class SuggestTagsForAllArticlesCommand extends AbstractApplicationCommand
      * Execute the console command.
      */
     public function handle(
-        ArticleRepository  $articles,
-        ArticleTagger $tagger,
+        ArticleRepository $articles,
+        ArticleTagger     $tagger,
+        ManifestReader    $manifestReader,
     )
     {
         $year = $this->option('year');
         $continue = $this->option('continue');
+        $skipNotEmpty = boolval($this->option('skip-not-empty'));
 
         if (null === $year) {
             $articlesList = $articles->getAllArticles();
@@ -47,6 +50,15 @@ class SuggestTagsForAllArticlesCommand extends AbstractApplicationCommand
                 continue;
             } else {
                 $continue = null;
+            }
+
+            if ($skipNotEmpty) {
+                $meta = $manifestReader->loadManifestFromPath($article->path, 'original');
+
+                if (count($meta->tags) > 0) {
+                    $this->info("Skipping article {$article->title} ({$article->external_id})");
+                    continue;
+                }
             }
 
             $this->info("Updating article {$article->title} ({$article->external_id})");

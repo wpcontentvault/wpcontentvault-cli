@@ -24,6 +24,8 @@ class AiSettingsRegistry
 
     private AiRequestConfiguration $classificationConfiguration;
 
+    private AiRequestConfiguration $summarizeConfiguration;
+
     public function __construct()
     {
         $pathResolver = new VaultPathResolver;
@@ -75,6 +77,19 @@ class AiSettingsRegistry
             $classificationModelName,
             $modelConfFactory->makeClassificationConfiguration($classificationModelName),
         );
+
+
+        $summarizeProvider = $this->providers[AiProviderEnum::from($aiConfig['settings']['summarize']['provider'])->value];
+        $summarizeModelName = AiModelEnum::from($aiConfig['settings']['summarize']['model']);
+        if (empty($summarizeProvider->getModelName($summarizeModelName))) {
+            throw new RuntimeException("Specified provider does not support model {$summarizeModelName->value}.");
+        }
+
+        $this->summarizeConfiguration = new AiRequestConfiguration(
+            $summarizeProvider,
+            $summarizeModelName,
+            $modelConfFactory->makeSummarizeConfiguration($summarizeModelName),
+        );
     }
 
     public function getTranslationConfiguration(): AiRequestConfiguration
@@ -94,6 +109,6 @@ class AiSettingsRegistry
 
     public function getSummarizeConfiguration(): AiRequestConfiguration
     {
-        throw new RuntimeException('Not implemented yet.');
+        return $this->summarizeConfiguration;
     }
 }

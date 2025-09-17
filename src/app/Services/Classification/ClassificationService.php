@@ -31,7 +31,11 @@ class ClassificationService
     {
         $collection = $collection->keyBy('slug');
 
-        $result = $this->suggestCategory($this->fetchArticleContent($article), $collection);
+        if(empty($article->context)){
+            throw new \RuntimeException("Article summary is empty! Can't assign tags");
+        }
+
+        $result = $this->suggestCategory($article->context, $collection);
 
         if (false === $collection->has($result->content)) {
             throw new \RuntimeException("Can't resolve category: {$result->content}");
@@ -42,7 +46,11 @@ class ClassificationService
 
     public function suggestTagsForArticle(Article $article, string $tagsList): array
     {
-        $result = $this->suggestTag($this->fetchArticleContent($article), $tagsList);
+        if(empty($article->context)){
+            throw new \RuntimeException("Article summary is empty! Can't assign tags");
+        }
+
+        $result = $this->suggestTags($article->context, $tagsList);
 
         $categories = [];
         foreach ($result->tags as $category => $tags) {
@@ -61,12 +69,12 @@ class ClassificationService
         return $categories;
     }
 
-    public function suggestCategory(ArticleContent $content, Collection $categories): SelectCategoryResult
+    public function suggestCategory(string $summary, Collection $categories): SelectCategoryResult
     {
         $system = <<<SYSTEM
 You are artificial intelligence the task of whom is categorize articles.
 You have strong experience with Linux operating systems, know a lot about open source software movement.
-User provides you article title and its annotation and wrapping up section.
+User provides you article summary.
 You should choose most suitable category from list below.
 
 Output final result only as a json object with two fields.
@@ -84,12 +92,7 @@ SYSTEM;
         $messages = new ChatMessagesBag();
         $messages->setSystemMessage($system);
 
-        $user = <<<USER
-Title: {$content->title}
-Annotation: {$content->annotation}
-Wrapping Up: {$content->warpingUp}
-USER;
-        $messages->addUserMessage($user);
+        $messages->addUserMessage($summary);
 
         $result = $this->aiService->completions(
             $this->aiSettings->getClassificationConfiguration(),
@@ -117,13 +120,13 @@ USER;
         );
     }
 
-    public function suggestTag(ArticleContent $content, string $tagsList): SelectTagsResult
+    public function suggestTags(string $summary, string $tagsList): SelectTagsResult
     {
         $system = <<<SYSTEM
 You are artificial intelligence the task of whom is assign tags for articles.
 You have strong experience with Linux operating systems, know a lot about open source software movement.
 The tag assigning process is split by steps. You will choose tags only for a specific tag category.
-User provides you tags list, article title, annotation table of contents and wrapping up section.
+User provides you tags list and article summary.
 You can choose none, one or multiple tags suitable for article from the provided list.
 Analyze provided parts of article and think which tags from the list are most suitable.
 Repeat that for each category.
@@ -148,14 +151,7 @@ SYSTEM;
         $tags .= $tagsList;
         $messages->addUserMessage($tags);
 
-        $user = <<<USER
-Title: {$content->title}
-Annotation: {$content->annotation}
-Wrapping Up: {$content->warpingUp}
-Table Of Contents:
-{$content->tableOfContent}
-USER;
-        $messages->addUserMessage($user);
+        $messages->addUserMessage($summary);
 
         $result = $this->aiService->completions(
             $this->aiSettings->getClassificationConfiguration(),
@@ -179,38 +175,6 @@ USER;
             comments: $data['comments'] ?? '',
             inputTokens: $result->inputTokens,
             outputTokens: $result->outputTokens
-        );
-    }
-
-    private function fetchArticleContent(Article $article): ArticleContent
-    {
-        $title = $article->title;
-
-        $paragraphsList = $this->paragraphs->findParagraphsByArticle($article, 2)
-            ->pluck('content')
-            ->toArray();
-
-        $wrapUpHeading = $this->paragraphs->getLastHeaderForArticle($article);
-        if (null !== $wrapUpHeading) {
-            $wrapUpList = $this->paragraphs->getParagraphsAfter($article, $wrapUpHeading, 2)
-                ->pluck('content')
-                ->toArray();
-            $wrapup = implode("\n", $wrapUpList);
-        } else {
-            $wrapup = "";
-        }
-
-        $tableOfContents = $this->paragraphs->getAllHeadingsForArticle($article)
-            ->pluck('content')
-            ->toArray();
-
-        $annotation = implode("\n", $paragraphsList);
-
-        return new ArticleContent(
-            title: $title,
-            annotation: $annotation,
-            warpingUp: $wrapup,
-            tableOfContent: implode("\n", $tableOfContents)
         );
     }
 }

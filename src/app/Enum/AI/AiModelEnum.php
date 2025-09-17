@@ -11,4 +11,15 @@ enum AiModelEnum: string
     case MXBAI_EMBED_LARGE = 'mxbai_embed_large';
     case GEMMA_3 = 'gemma_3';
     case DEEPSEEK_R1 = 'deepseek_r1';
+
+    public function getSafeContentLength(): int
+    {
+        return match ($this) {
+            self::CLAUSE_SONNET_3_5 => 16_000,
+            self::DEEPSEEK_V3 => 16_000,
+            self::DEEPSEEK_R1 => 16_000,
+            self::GEMMA_3 => 16_000,
+            self::MXBAI_EMBED_LARGE => 5000,
+        };
+    }
 }
