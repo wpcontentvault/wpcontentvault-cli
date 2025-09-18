@@ -7,9 +7,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * 
+ *
  *
  * @property string $id
  * @property string $article_id
@@ -49,5 +50,21 @@ class Image extends Model
     public function article(): BelongsTo
     {
         return $this->belongsTo(Article::class, 'article_id', 'id');
+    }
+
+    public function localizations(): HasMany
+    {
+        return $this->hasMany(ImageLocalization::class, 'image_id', 'id');
+    }
+
+    public function findLocalizationByLocale(Locale $locale): ?ImageLocalization
+    {
+        foreach ($this->localizations as $localization) {
+            if ($localization->locale_id == $locale->getKey()) {
+                return $localization;
+            }
+        }
+
+        return null;
     }
 }

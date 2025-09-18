@@ -94,4 +94,9 @@ class SitesRegistry
     {
         return $this->mainSiteLocaleCode;
     }
+
+    public function getLocaleCodes(): array
+    {
+        return array_keys($this->connectors);
+    }
 }

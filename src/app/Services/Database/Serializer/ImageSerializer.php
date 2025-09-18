@@ -10,18 +10,20 @@ use App\Enum\BlockTypeEnum;
 use App\Models\Article;
 use App\Repositories\ImageRepository;
 use App\Services\Database\Hasher\ImageHasher;
-use App\Services\Database\Resolver\ImageResolver;
+use App\Services\Database\Resolver\ImageDataResolver;
+use App\Services\Vault\Discovery\ImageLocalizationsDiscovery;
 use App\Services\Wordpress\ImageUpdater;
 use Illuminate\Support\Str;
 
 class ImageSerializer
 {
     public function __construct(
-        private ImageRepository $images,
-        private ImageHasher $imageHasher,
-        private ImageResolver $imageResolver,
-        private ImageUpdater $imageUpdater,
-        private GlobalConfiguration $config,
+        private ImageRepository             $images,
+        private ImageHasher                 $imageHasher,
+        private ImageDataResolver           $imageResolver,
+        private ImageUpdater                $imageUpdater,
+        private GlobalConfiguration         $config,
+        private ImageLocalizationsDiscovery $imageDiscovery,
     ) {}
 
     public function serializeImage(ObjectBlock $block, Article $article)
@@ -32,10 +34,10 @@ class ImageSerializer
 
         $image = $this->images->findImageByHashAndArticle($hash, $article);
 
-        $imagePath = Str::finish($article->path, '/').$block->getAttributes()['src'];
+        $imagePath = Str::finish($article->path, '/') . $block->getAttributes()['src'];
 
         if ($image === null) {
-            $uploaded = $this->imageResolver->resolveImage(
+            $uploaded = $this->imageResolver->resolveImageOnMainSite(
                 $imagePath,
                 intval($article->external_id)
             );
@@ -49,7 +51,7 @@ class ImageSerializer
             $image->thumbnail_url = $uploaded->thumbnailUrl;
             $image->save();
         } elseif ($this->config->shouldUpdateImages()) {
-            $uploaded = $this->imageResolver->resolveImage(
+            $uploaded = $this->imageResolver->resolveImageOnMainSite(
                 $imagePath,
                 intval($article->external_id)
             );
@@ -71,6 +73,8 @@ class ImageSerializer
         $image->save();
 
         $article->image_ids->add($image->getKey());
+
+        $this->imageDiscovery->discoverImageLocalizations($image, $article);
 
         return $image;
     }

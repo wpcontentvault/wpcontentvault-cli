@@ -6,7 +6,6 @@ namespace App\Console\Commands\Classification;
 
 use App\Console\Commands\AbstractApplicationCommand;
 use App\Repositories\ArticleRepository;
-use App\Services\Classification\ArticleCategorizer;
 use App\Services\Classification\ArticleTagger;
 use App\Services\Vault\Manifest\V2\ManifestReader;
 

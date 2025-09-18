@@ -5,25 +5,24 @@ declare(strict_types=1);
 namespace App\Services\Exporting;
 
 use App\Context\Wordpress\ImageMeta;
-use App\Models\Locale;
-use App\Registry\SitesRegistry;
 use RuntimeException;
 use WPAjaxConnector\WPAjaxConnectorPHP\Objects\AttachmentData;
+use WPAjaxConnector\WPAjaxConnectorPHP\WPConnectorInterface;
 
 class AttachedImageFinder
 {
-    private SitesRegistry $sitesRegistry;
+    private WPConnectorInterface $connector;
 
     private array $images = [];
 
     private ?int $postId = null;
 
-    public function __construct(SitesRegistry $sitesRegistry)
+    public function __construct(WPConnectorInterface $connector)
     {
-        $this->sitesRegistry = $sitesRegistry;
+        $this->connector = $connector;
     }
 
-    public function replace(int $postId, ?Locale $locale = null): void
+    public function replace(int $postId): void
     {
         if ($postId === $this->postId) {
             return;
@@ -31,13 +30,7 @@ class AttachedImageFinder
 
         $this->postId = $postId;
 
-        if ($locale !== null) {
-            $connector = $this->sitesRegistry->getSiteConnectorByLocale($locale);
-        } else {
-            $connector = $this->sitesRegistry->getMainSiteConnector();
-        }
-
-        $attachments = $connector->query()->parent($postId)->getAttachments();
+        $attachments = $this->connector->query()->parent($postId)->getAttachments();
 
         foreach ($attachments->posts as $attachment) {
             /** @var AttachmentData $attachment */

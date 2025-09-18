@@ -13,6 +13,7 @@ use App\Registry\SitesRegistry;
 use App\Services\Checking\ArticleChecker;
 use App\Services\Console\ApplicationOutput;
 use App\Services\Exporting\AttachedImageFinder;
+use App\Services\Exporting\Factory\AttachedImageFinderFactory;
 use App\Services\Exporting\RegexImageFinder;
 use Illuminate\Support\ServiceProvider;
 
@@ -51,11 +52,11 @@ class AppServiceProvider extends ServiceProvider
             return new RegexImageFinder($main);
         });
 
-        $this->app->singleton(AttachedImageFinder::class, function () {
+        $this->app->singleton(AttachedImageFinderFactory::class, function () {
             /** @var SitesRegistry $config */
             $config = $this->app[SitesRegistry::class];
 
-            return new AttachedImageFinder($config);
+            return new AttachedImageFinderFactory($config);
         });
 
         $this->app->singleton(GlobalConfiguration::class, function () {

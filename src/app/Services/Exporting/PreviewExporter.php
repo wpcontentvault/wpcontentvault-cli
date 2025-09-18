@@ -5,23 +5,31 @@ declare(strict_types=1);
 namespace App\Services\Exporting;
 
 use App\Registry\SitesRegistry;
+use App\Services\Exporting\Factory\AttachedImageFinderFactory;
 use App\Services\Vault\Manifest\V2\ManifestReader;
 use App\Services\Wordpress\PreviewUploader;
 
 class PreviewExporter
 {
     public function __construct(
-        private SitesRegistry       $sites,
-        private ManifestReader      $manifestReader,
-        private AttachedImageFinder $imageFinder,
-        private PreviewUploader     $uploader,
+        private SitesRegistry              $sites,
+        private ManifestReader             $manifestReader,
+        private AttachedImageFinderFactory $imageFinderFactory,
+        private PreviewUploader            $uploader,
     ) {}
 
     public function setCover(string $path, string $name): void
     {
+
         $meta = $this->manifestReader->loadManifestFromPath($path, $name);
         $connector = $this->sites->getSiteConnectorByLocale($meta->locale);
-        $this->imageFinder->replace($meta->externalId, $meta->locale);
+
+        if ($name === 'original') {
+            $imageFinder = $this->imageFinderFactory->getMainFinder();
+        } else {
+            $imageFinder = $this->imageFinderFactory->getFinderByLocale($meta->locale);
+        }
+        $imageFinder->replace($meta->externalId);
 
         $coverName = 'preview-' . $meta->externalId . '.png';
 
@@ -30,7 +38,7 @@ class PreviewExporter
             $vaultFilePath = $path . 'cover/' . $name . '.png';
         }
 
-        if ($this->imageFinder->hasImage($coverName) === false) {
+        if ($imageFinder->hasImage($coverName) === false) {
             $attachment = $this->uploader->uploadPreview(
                 $vaultFilePath,
                 $meta->externalId,
@@ -38,7 +46,7 @@ class PreviewExporter
                 $connector
             );
         } else {
-            $attachment = $this->imageFinder->findImageByFileName($coverName);
+            $attachment = $imageFinder->findImageByFileName($coverName);
 
             $this->uploader->updatePreview(
                 $vaultFilePath,

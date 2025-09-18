@@ -50,7 +50,11 @@ class ArticleExporter
             throw new RuntimeException('Main article not found in DB!');
         }
 
-        $this->imageMapper->mapImagesToBlocks($blocks, $article);
+        if ($name === 'original') {
+            $this->imageMapper->mapImagesToBlocks($blocks, $article);
+        } else {
+            $this->imageMapper->mapImagesToBlocks($blocks, $article, $meta->locale);
+        }
 
         if (false === $this->sitesConfiguration->hasSiteConnectorForLocale($meta->locale)) {
             $this->output->warning("No connector configured for {$meta->locale->code}");
