@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace App\Console\Commands\Upload;
 
 use App\Console\Commands\AbstractApplicationCommand;
+use App\Events\ArticleBeforeExportEvent;
 use App\Repositories\ArticleRepository;
 use App\Services\Exporting\ArticleExporter;
 use App\Services\Exporting\PreviewExporter;
+use App\Services\Importing\ArticleStatusImporter;
 use App\Services\Vault\Manifest\ManifestNameResolver;
 use App\Services\Wordpress\LocalizationBindingUpdater;
 use App\Services\Wordpress\PostMetaUpdater;
+use Illuminate\Events\Dispatcher;
 use RuntimeException;
 
 class UploadArticleCommand extends AbstractApplicationCommand
@@ -39,6 +42,7 @@ class UploadArticleCommand extends AbstractApplicationCommand
         PreviewExporter $coverImporter,
         PostMetaUpdater $postMetaUpdater,
         LocalizationBindingUpdater $localizationBindingUpdater,
+        ArticleStatusImporter $statusImporter,
     ): int {
         $id = $this->argument('id');
 
@@ -49,6 +53,8 @@ class UploadArticleCommand extends AbstractApplicationCommand
         }
 
         foreach ($article->localizations as $localization) {
+            $statusImporter->pullArticleStatus($article, $localization->locale);
+
             $name = $manifestNameResolver->resolveName($article, $localization->locale);
 
             $exporter->exportLocalizationFromDir($article->path, $name);

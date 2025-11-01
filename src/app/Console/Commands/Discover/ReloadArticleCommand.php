@@ -16,7 +16,7 @@ class ReloadArticleCommand extends AbstractApplicationCommand
      *
      * @var string
      */
-    protected $signature = 'reload-article {id} {--update} {--replace}';
+    protected $signature = 'reload-article {id} {--update} {--replace} {--do-not-upload}';
 
     /**
      * The console command description.
@@ -42,6 +42,10 @@ class ReloadArticleCommand extends AbstractApplicationCommand
         $updateImages = $this->option('update') ?? false;
         if ($updateImages) {
             $config->updateImages();
+        }
+        $doNotUploadImages = $this->option('do-not-upload') ?? false;
+        if ($doNotUploadImages) {
+            $config->throwOnImageUpload();
         }
 
         $article = $articles->findArticleByExternalId($id);
