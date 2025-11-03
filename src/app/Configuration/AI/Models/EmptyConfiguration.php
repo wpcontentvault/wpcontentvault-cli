@@ -22,4 +22,9 @@ class EmptyConfiguration implements AiModelConfigurationInterface
     {
         return 0;
     }
+
+    public function getReasoningEffort(): ?string
+    {
+        return null;
+    }
 }

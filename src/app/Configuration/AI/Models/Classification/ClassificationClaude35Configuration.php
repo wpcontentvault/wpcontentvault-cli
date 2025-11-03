@@ -22,4 +22,9 @@ class ClassificationClaude35Configuration implements AiModelConfigurationInterfa
     {
         return 2.0;
     }
+
+    public function getReasoningEffort(): ?string
+    {
+        return null;
+    }
 }

@@ -22,4 +22,9 @@ class SummarizeDeepseekV3Configuration implements AiModelConfigurationInterface
     {
         return 3.0;
     }
+
+    public function getReasoningEffort(): ?string
+    {
+        return null;
+    }
 }

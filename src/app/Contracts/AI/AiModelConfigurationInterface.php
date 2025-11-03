@@ -11,4 +11,6 @@ interface AiModelConfigurationInterface
     public function getTopK(): float;
 
     public function getTopP(): float;
+
+    public function getReasoningEffort(): ?string;
 }

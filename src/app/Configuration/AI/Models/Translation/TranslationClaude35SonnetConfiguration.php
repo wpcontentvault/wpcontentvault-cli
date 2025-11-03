@@ -22,4 +22,9 @@ class TranslationClaude35SonnetConfiguration implements AiModelConfigurationInte
     {
         return 5.0;
     }
+
+    public function getReasoningEffort(): ?string
+    {
+        return null;
+    }
 }

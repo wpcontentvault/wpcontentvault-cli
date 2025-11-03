@@ -15,6 +15,7 @@ class ChatCompletionResponse
         public readonly int $totalTokens,
         public readonly ?float $totalTime = null,
         public readonly ?string $content = null,
+        public readonly ?string $reasoning = null,
         public readonly array $toolCalls = [],
     ) {}
 }

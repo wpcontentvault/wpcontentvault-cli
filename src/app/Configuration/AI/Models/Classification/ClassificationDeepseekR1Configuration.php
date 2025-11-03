@@ -22,4 +22,9 @@ class ClassificationDeepseekR1Configuration implements AiModelConfigurationInter
     {
         return 2.0;
     }
+
+    public function getReasoningEffort(): ?string
+    {
+        return null;
+    }
 }

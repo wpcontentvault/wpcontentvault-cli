@@ -52,9 +52,13 @@ class OpenAiCompatibleClient implements ChatClientInterface
             'model' => $aiConfig->getProviderConfiguration()->getModelName($aiConfig->getModel()),
             'messages' => $messages,
             'temperature' => $aiConfig->getModelConfiguration()->getTemperature(),
-            'top_k' => $aiConfig->getModelConfiguration()->getTopK(),
+//            'top_k' => $aiConfig->getModelConfiguration()->getTopK(),
             'top_p' => $aiConfig->getModelConfiguration()->getTopP(),
         ];
+
+        if(null !== $aiConfig->getMOdelConfiguration()->getReasoningEffort()) {
+            $params['reasoning_effort'] = $aiConfig->getMOdelConfiguration()->getReasoningEffort();
+        }
 
         if (empty($tools) === false) {
             $params['tools'] = $tools;
@@ -95,6 +99,7 @@ class OpenAiCompatibleClient implements ChatClientInterface
             completionTokens: $data['usage']['completion_tokens'],
             totalTokens: $data['usage']['total_tokens'],
             content: $data['choices'][0]['message']['content'] ?? null,
+            reasoning: $data['choices'][0]['message']['reasoning'] ?? null,
             toolCalls: $toolCalls,
         );
     }

@@ -22,4 +22,9 @@ class SummarizeGemma3Configuration implements AiModelConfigurationInterface
     {
         return 2.0;
     }
+
+    public function getReasoningEffort(): ?string
+    {
+        return null;
+    }
 }

@@ -30,4 +30,18 @@ class ApplicationOutput implements ApplicationOutputInterface
     {
         $this->output->warning("$message");
     }
+
+    public function gray(string $message): void
+    {
+        $this->output->writeln("\033[90m$message\033[0m");
+    }
+
+    public function reasoning(string $message): void
+    {
+        $lines = explode("\n", $message);
+
+        foreach($lines as $line) {
+            $this->gray($line);
+        }
+    }
 }

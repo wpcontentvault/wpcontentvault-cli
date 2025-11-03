@@ -8,4 +8,5 @@ enum AiProviderEnum: string
 {
     case OPEN_ROUTER = 'open_router';
     case OLLAMA = 'ollama';
+    case GROQ = 'groq';
 }

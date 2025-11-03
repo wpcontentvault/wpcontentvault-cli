@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Configuration\AI\Models\Summarize;
+namespace App\Configuration\AI\Models\Classification;
 
 use App\Contracts\AI\AiModelConfigurationInterface;
 
-class SummarizeClaude35Configuration implements AiModelConfigurationInterface
+class ClassificationGptOssConfiguration implements AiModelConfigurationInterface
 {
     public function getTemperature(): float
     {
@@ -25,6 +25,6 @@ class SummarizeClaude35Configuration implements AiModelConfigurationInterface
 
     public function getReasoningEffort(): ?string
     {
-        return null;
+        return 'high';
     }
 }

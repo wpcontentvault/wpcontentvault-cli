@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Registry;
 
 use App\Configuration\AI\AiRequestConfiguration;
+use App\Configuration\AI\Provider\GroqProviderConfiguration;
 use App\Configuration\AI\Provider\OllamaProviderConfiguration;
 use App\Configuration\AI\Provider\OpenRouterProviderConfiguration;
 use App\Enum\AI\AiModelEnum;
@@ -38,6 +39,7 @@ class AiSettingsRegistry
             $this->providers[$name] = match ($name) {
                 AiProviderEnum::OPEN_ROUTER->value => new OpenRouterProviderConfiguration($provider),
                 AiProviderEnum::OLLAMA->value => new OllamaProviderConfiguration($provider),
+                AiProviderEnum::GROQ->value => new GroqProviderConfiguration($provider),
                 default => throw new RuntimeException(sprintf('Provider "%s" does not exist.', $name))
             };
         }

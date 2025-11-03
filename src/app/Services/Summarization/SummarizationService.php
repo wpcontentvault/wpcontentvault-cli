@@ -48,6 +48,7 @@ SYSTEM;
             false
         );
 
+        dump($result->reasoning);
         return new SummarizationResult(
             summary: $result->content,
             inputTokens: $result->inputTokens,

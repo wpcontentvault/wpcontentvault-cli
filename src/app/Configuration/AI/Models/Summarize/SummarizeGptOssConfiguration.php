@@ -6,7 +6,7 @@ namespace App\Configuration\AI\Models\Summarize;
 
 use App\Contracts\AI\AiModelConfigurationInterface;
 
-class SummarizeClaude35Configuration implements AiModelConfigurationInterface
+class SummarizeGptOssConfiguration implements AiModelConfigurationInterface
 {
     public function getTemperature(): float
     {
@@ -25,6 +25,6 @@ class SummarizeClaude35Configuration implements AiModelConfigurationInterface
 
     public function getReasoningEffort(): ?string
     {
-        return null;
+        return 'medium';
     }
 }

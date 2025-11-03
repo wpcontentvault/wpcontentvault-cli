@@ -17,6 +17,7 @@ use App\Models\Tag;
 use App\Registry\AiSettingsRegistry;
 use App\Repositories\ParagraphRepository;
 use App\Services\AI\OpenAiCompatibleService;
+use App\Services\Console\ApplicationOutput;
 use Illuminate\Support\Collection;
 
 class ClassificationService
@@ -24,14 +25,14 @@ class ClassificationService
     public function __construct(
         private OpenAiCompatibleService $aiService,
         private AiSettingsRegistry      $aiSettings,
-        private ParagraphRepository     $paragraphs,
+        private ApplicationOutput       $output,
     ) {}
 
     public function suggestCategoryForArticle(Article $article, Collection $collection): Category
     {
         $collection = $collection->keyBy('slug');
 
-        if(empty($article->context)){
+        if (empty($article->context)) {
             throw new \RuntimeException("Article summary is empty! Can't assign tags");
         }
 
@@ -46,11 +47,15 @@ class ClassificationService
 
     public function suggestTagsForArticle(Article $article, string $tagsList): array
     {
-        if(empty($article->context)){
+        if (empty($article->context)) {
             throw new \RuntimeException("Article summary is empty! Can't assign tags");
         }
 
         $result = $this->suggestTags($article->context, $tagsList);
+
+        if(false === empty($result->reasoning)) {
+            $this->output->reasoning($result->reasoning);
+        }
 
         $categories = [];
         foreach ($result->tags as $category => $tags) {
@@ -173,6 +178,7 @@ SYSTEM;
         return new SelectTagsResult(
             tags: $data['slugs'],
             comments: $data['comments'] ?? '',
+            reasoning: $result->reasoning,
             inputTokens: $result->inputTokens,
             outputTokens: $result->outputTokens
         );

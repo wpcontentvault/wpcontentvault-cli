@@ -7,7 +7,7 @@ namespace App\Configuration\AI\Provider;
 use App\Contracts\AI\AiProviderConfigurationInterface;
 use App\Enum\AI\AiModelEnum;
 
-class OpenRouterProviderConfiguration implements AiProviderConfigurationInterface
+class GroqProviderConfiguration implements AiProviderConfigurationInterface
 {
     private ?string $accessToken;
 
@@ -19,15 +19,13 @@ class OpenRouterProviderConfiguration implements AiProviderConfigurationInterfac
     public function getModelName(AiModelEnum $model): string
     {
         return match ($model) {
-            AiModelEnum::CLAUSE_SONNET_3_5 => 'anthropic/claude-3.5-sonnet',
-            AiModelEnum::DEEPSEEK_V3 => 'deepseek/deepseek-chat',
             AiModelEnum::GPT_OSS => 'openai/gpt-oss-120b',
         };
     }
 
     public function getBaseUrl(): string
     {
-        return 'https://openrouter.ai/api/';
+        return 'https://api.groq.com/openai/';
     }
 
     public function getEmbeddingsUrl(): string

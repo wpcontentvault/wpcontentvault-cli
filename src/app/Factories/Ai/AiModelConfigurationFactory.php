@@ -7,9 +7,11 @@ namespace App\Factories\Ai;
 use App\Configuration\AI\Models\Classification\ClassificationClaude35Configuration;
 use App\Configuration\AI\Models\Classification\ClassificationDeepseekR1Configuration;
 use App\Configuration\AI\Models\Classification\ClassificationGemma3Configuration;
+use App\Configuration\AI\Models\Classification\ClassificationGptOssConfiguration;
 use App\Configuration\AI\Models\EmptyConfiguration;
 use App\Configuration\AI\Models\Summarize\SummarizeClaude35Configuration;
 use App\Configuration\AI\Models\Summarize\SummarizeGemma3Configuration;
+use App\Configuration\AI\Models\Summarize\SummarizeGptOssConfiguration;
 use App\Configuration\AI\Models\Translation\TranslationClaude35SonnetConfiguration;
 use App\Contracts\AI\AiModelConfigurationInterface;
 use App\Enum\AI\AiModelEnum;
@@ -39,6 +41,7 @@ class AiModelConfigurationFactory
             AiModelEnum::GEMMA_3 => new ClassificationGemma3Configuration(),
             AiModelEnum::CLAUSE_SONNET_3_5 => new ClassificationClaude35Configuration(),
             AiModelEnum::DEEPSEEK_R1 => new ClassificationDeepseekR1Configuration(),
+            AiModelEnum::GPT_OSS => new ClassificationGptOssConfiguration(),
             default => throw new RuntimeException("Specified model {$modelName->value} does not have configuration for classification!"),
         };
     }
@@ -48,6 +51,7 @@ class AiModelConfigurationFactory
         return match ($modelName) {
             AiModelEnum::GEMMA_3 => new SummarizeGemma3Configuration(),
             AiModelEnum::CLAUSE_SONNET_3_5 => new SummarizeClaude35Configuration(),
+            AiModelEnum::GPT_OSS => new SummarizeGptOssConfiguration(),
             default => throw new RuntimeException("Specified model {$modelName->value} does not have configuration for classification!"),
         };
     }

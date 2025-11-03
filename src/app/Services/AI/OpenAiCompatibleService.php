@@ -107,6 +107,7 @@ class OpenAiCompatibleService
 
         return new ChatCompletionResult(
             content: $response->content,
+            reasoning: $response->reasoning,
             inputTokens: $inputTokens,
             outputTokens: $outputTokens
         );
