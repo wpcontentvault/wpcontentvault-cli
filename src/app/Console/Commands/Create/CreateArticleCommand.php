@@ -8,6 +8,7 @@ use App\Console\Commands\AbstractApplicationCommand;
 use App\Context\Markdown\PostMeta;
 use App\Events\ArticleCreated;
 use App\Events\Vault\VaultCreated;
+use App\Repositories\CategoryRepository;
 use App\Repositories\LocaleRepository;
 use App\Services\Vault\Manifest\V2\ManifestWriter;
 use App\Services\Vault\VaultPathResolver;
@@ -34,10 +35,11 @@ class CreateArticleCommand extends AbstractApplicationCommand
     protected $description = 'Initializes a new article';
 
     public function handle(
-        VaultPathResolver $pathResolver,
-        ManifestWriter    $manifestWriter,
-        LocaleRepository  $locales,
-        Dispatcher        $dispatcher,
+        VaultPathResolver  $pathResolver,
+        ManifestWriter     $manifestWriter,
+        LocaleRepository   $locales,
+        CategoryRepository $categories,
+        Dispatcher         $dispatcher,
     ): int
     {
         $root = $pathResolver->getArticlesRoot();
@@ -66,7 +68,15 @@ class CreateArticleCommand extends AbstractApplicationCommand
             label: 'Select additional locales', options: array_values($availableLocales)
         );
 
+        $availableCategories = $categories->getAllCategories()
+            ->pluck('slug')
+            ->toArray();
+        $categorySlug = select(
+            label: 'Select category', options: array_values($availableCategories)
+        );
+
         $originalLocale = $locales->findLocaleByCode($originalLocaleCode);
+        $category = $categories->findCategoryBySlug($categorySlug);
 
         $meta = new PostMeta(
             locale: $originalLocale,
@@ -77,7 +87,7 @@ class CreateArticleCommand extends AbstractApplicationCommand
             modifiedAt: null,
             url: null,
             externalId: null,
-            category: null,
+            category: $category,
             tags: []
         );
 
@@ -90,6 +100,7 @@ class CreateArticleCommand extends AbstractApplicationCommand
         }
 
         mkdir($articlePath, 0755, true);
+        mkdir($articlePath . 'cover', 0755, true);
         touch($articlePath . 'original.md');
 
         $manifestWriter->writeManifest($articlePath, 'original', $meta);
