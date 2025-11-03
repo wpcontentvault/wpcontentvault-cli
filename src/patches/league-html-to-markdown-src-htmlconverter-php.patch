@@ -1,0 +1,12 @@
+--- /dev/null
++++ ../src/HtmlConverter.php
+@@ -183,7 +183,8 @@
+         }
+ 
+         // If the node has children, convert those to Markdown first
+-        if ($element->hasChildren()) {
++        // But if node is code - skip - https://github.com/thephpleague/html-to-markdown/issues/221
++        if ($element->hasChildren() && $element->getTagName() !== 'code') {
+             foreach ($element->getChildren() as $child) {
+                 $this->convertChildren($child);
+             }

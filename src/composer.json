@@ -9,6 +9,7 @@
         "ext-dom": "*",
         "ext-gd": "*",
         "ext-libxml": "*",
+        "cweagans/composer-patches": "^1.7",
         "edgaras/strsim": "^1.0",
         "illuminate/log": "^11.44.2",
         "illuminate/queue": "^11.44.2",
@@ -33,7 +34,8 @@
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.1",
         "pestphp/pest": "^3.7",
-        "rector/rector": "^2.0"
+        "rector/rector": "^2.0",
+        "symplify/vendor-patches": "^11.5"
     },
     "autoload": {
         "psr-4": {
@@ -59,6 +61,11 @@
         ]
     },
     "extra": {
+        "patches": {
+            "league/html-to-markdown": [
+                "patches/league-html-to-markdown-src-htmlconverter-php.patch"
+            ]
+        },
         "laravel": {
             "dont-discover": []
         }
@@ -68,6 +75,7 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "allow-plugins": {
+            "cweagans/composer-patches": true,
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
         }
