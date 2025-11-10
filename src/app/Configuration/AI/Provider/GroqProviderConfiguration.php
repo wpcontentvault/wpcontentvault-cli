@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Configuration\AI\Provider;
 
+use App\Configuration\AI\AiRequestConfiguration;
+use App\Contracts\AI\AiModelConfigurationInterface;
 use App\Contracts\AI\AiProviderConfigurationInterface;
 use App\Enum\AI\AiModelEnum;
 
@@ -36,5 +38,21 @@ class GroqProviderConfiguration implements AiProviderConfigurationInterface
     public function getAuthToken(): string
     {
         return $this->accessToken;
+    }
+
+    public function buildRequestParams(AiRequestConfiguration $aiConfig): array
+    {
+        //top_k not supported by groq
+        $params = [
+            'model' => $this->getModelName($aiConfig->getModel()),
+            'temperature' => $aiConfig->getModelConfiguration()->getTemperature(),
+            'top_p' => $aiConfig->getModelConfiguration()->getTopP(),
+        ];
+
+        if (null !== $aiConfig->getMOdelConfiguration()->getReasoningEffort()) {
+            $params['reasoning_effort'] = $aiConfig->getMOdelConfiguration()->getReasoningEffort();
+        }
+
+        return $params;
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Configuration\AI\Provider;
 
+use App\Configuration\AI\AiRequestConfiguration;
 use App\Contracts\AI\AiProviderConfigurationInterface;
 use App\Enum\AI\AiModelEnum;
 use Illuminate\Support\Str;
@@ -41,5 +42,21 @@ class OllamaProviderConfiguration implements AiProviderConfigurationInterface
     public function getAuthToken(): string
     {
         return '';
+    }
+
+    public function buildRequestParams(AiRequestConfiguration $aiConfig): array
+    {
+        $params = [
+            'model' => $this->getModelName($aiConfig->getModel()),
+            'temperature' => $aiConfig->getModelConfiguration()->getTemperature(),
+            'top_p' => $aiConfig->getModelConfiguration()->getTopP(),
+            'top_k' => $aiConfig->getModelConfiguration()->getTopK(),
+        ];
+
+        if (null !== $aiConfig->getMOdelConfiguration()->getReasoningEffort()) {
+            $params['think'] = true;
+        }
+
+        return $params;
     }
 }

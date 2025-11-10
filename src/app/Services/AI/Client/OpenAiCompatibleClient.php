@@ -48,17 +48,9 @@ class OpenAiCompatibleClient implements ChatClientInterface
     public function completions(
         AiRequestConfiguration $aiConfig, array $messages = [], array $tools = [], bool $json = false): ChatCompletionResponse
     {
-        $params = [
-            'model' => $aiConfig->getProviderConfiguration()->getModelName($aiConfig->getModel()),
-            'messages' => $messages,
-            'temperature' => $aiConfig->getModelConfiguration()->getTemperature(),
-//            'top_k' => $aiConfig->getModelConfiguration()->getTopK(),
-            'top_p' => $aiConfig->getModelConfiguration()->getTopP(),
-        ];
+        $params = $aiConfig->getProviderConfiguration()->buildRequestParams($aiConfig);
 
-        if(null !== $aiConfig->getMOdelConfiguration()->getReasoningEffort()) {
-            $params['reasoning_effort'] = $aiConfig->getMOdelConfiguration()->getReasoningEffort();
-        }
+        $params['messages'] = $messages;
 
         if (empty($tools) === false) {
             $params['tools'] = $tools;

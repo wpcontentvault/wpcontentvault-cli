@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Contracts\AI;
 
+use App\Configuration\AI\AiRequestConfiguration;
 use App\Enum\AI\AiModelEnum;
 
 interface AiProviderConfigurationInterface
@@ -15,4 +16,6 @@ interface AiProviderConfigurationInterface
     public function getEmbeddingsUrl(): string;
 
     public function getAuthToken(): string;
+
+    public function buildRequestParams(AiRequestConfiguration $aiConfig): array;
 }
