@@ -30,7 +30,8 @@ class AiModelConfigurationFactory
     public function makeEmbeddingConfiguration(AiModelEnum $modelName): AiModelConfigurationInterface
     {
         return match ($modelName) {
-            AiModelEnum::MXBAI_EMBED_LARGE => new EmptyConfiguration,
+            AiModelEnum::MXBAI_EMBED_LARGE => new EmptyConfiguration(),
+            AiModelEnum::MISTRAL_EMBED => new EmptyConfiguration(),
             default => throw new RuntimeException("Specified model {$modelName->value} does not have configuration for embedding!"),
         };
     }

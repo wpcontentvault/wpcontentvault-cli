@@ -23,6 +23,7 @@ class OpenRouterProviderConfiguration implements AiProviderConfigurationInterfac
             AiModelEnum::CLAUSE_SONNET_3_5 => 'anthropic/claude-3.5-sonnet',
             AiModelEnum::DEEPSEEK_V3 => 'deepseek/deepseek-chat',
             AiModelEnum::GPT_OSS => 'openai/gpt-oss-120b',
+            AiModelEnum::MISTRAL_EMBED => 'mistralai/mistral-embed-2312',
         };
     }
 
@@ -33,7 +34,7 @@ class OpenRouterProviderConfiguration implements AiProviderConfigurationInterfac
 
     public function getEmbeddingsUrl(): string
     {
-        throw new \RuntimeException('Not supported by this provider!');
+        return 'v1/embeddings';
     }
 
     public function getAuthToken(): string
