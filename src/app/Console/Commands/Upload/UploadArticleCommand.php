@@ -9,7 +9,7 @@ use App\Events\ArticleBeforeExportEvent;
 use App\Repositories\ArticleRepository;
 use App\Services\Exporting\ArticleExporter;
 use App\Services\Exporting\PreviewExporter;
-use App\Services\Importing\ArticleStatusImporter;
+use App\Services\Importing\ArticleMetaImporter;
 use App\Services\Vault\Manifest\ManifestNameResolver;
 use App\Services\Wordpress\LocalizationBindingUpdater;
 use App\Services\Wordpress\PostMetaUpdater;
@@ -36,13 +36,13 @@ class UploadArticleCommand extends AbstractApplicationCommand
      * Execute the console command.
      */
     public function handle(
-        ArticleRepository $articles,
-        ArticleExporter $exporter,
-        ManifestNameResolver $manifestNameResolver,
-        PreviewExporter $coverImporter,
-        PostMetaUpdater $postMetaUpdater,
+        ArticleRepository          $articles,
+        ArticleExporter            $exporter,
+        ManifestNameResolver       $manifestNameResolver,
+        PreviewExporter            $coverImporter,
+        PostMetaUpdater            $postMetaUpdater,
         LocalizationBindingUpdater $localizationBindingUpdater,
-        ArticleStatusImporter $statusImporter,
+        ArticleMetaImporter        $statusImporter,
     ): int {
         $id = $this->argument('id');
 
@@ -53,7 +53,7 @@ class UploadArticleCommand extends AbstractApplicationCommand
         }
 
         foreach ($article->localizations as $localization) {
-            $statusImporter->pullArticleStatus($article, $localization->locale);
+            $statusImporter->pullArticleMeta($article, $localization->locale);
 
             $name = $manifestNameResolver->resolveName($article, $localization->locale);
 

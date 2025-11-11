@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Importing;
 
+use App\Enum\Wordpress\ArticleStatusEnum;
 use App\Models\Article;
 use App\Models\Locale;
 use App\Registry\SitesRegistry;
@@ -11,7 +12,7 @@ use App\Services\Vault\Manifest\ManifestNameResolver;
 use App\Services\Vault\Manifest\V2\ManifestReader;
 use App\Services\Vault\Manifest\V2\ManifestUpdater;
 
-class ArticleStatusImporter
+class ArticleMetaImporter
 {
     public function __construct(
         private SitesRegistry        $sitesConfig,
@@ -20,7 +21,7 @@ class ArticleStatusImporter
         private ManifestUpdater      $manifestUpdater,
     ) {}
 
-    public function pullArticleStatus(Article $article, Locale $locale): void
+    public function pullArticleMeta(Article $article, Locale $locale): void
     {
         $name = $this->manifestNameResolver->resolveName($article, $locale);
 
@@ -35,6 +36,12 @@ class ArticleStatusImporter
         $localization = $article->findLocalizationByLocale($locale);
 
         $postData = $connector->getPost($localization->external_id);
+
+        $this->manifestUpdater->updateStatus(
+            $article->path,
+            $name,
+            ArticleStatusEnum::from($postData->status),
+        );
 
         $this->manifestUpdater->updatePublishedAndModifiedDates(
             $article->path,

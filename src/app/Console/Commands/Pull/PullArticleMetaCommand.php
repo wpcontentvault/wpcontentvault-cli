@@ -6,7 +6,7 @@ namespace App\Console\Commands\Pull;
 
 use App\Console\Commands\AbstractApplicationCommand;
 use App\Repositories\ArticleRepository;
-use App\Services\Importing\ArticleStatusImporter;
+use App\Services\Importing\ArticleMetaImporter;
 
 class PullArticleMetaCommand extends AbstractApplicationCommand
 {
@@ -28,8 +28,8 @@ class PullArticleMetaCommand extends AbstractApplicationCommand
      * Execute the console command.
      */
     public function handle(
-        ArticleRepository     $articles,
-        ArticleStatusImporter $importer,
+        ArticleRepository   $articles,
+        ArticleMetaImporter $importer,
     ): int
     {
         $id = intval($this->argument('id'));
@@ -43,7 +43,7 @@ class PullArticleMetaCommand extends AbstractApplicationCommand
         }
 
         foreach($article->localizations as $localization) {
-            $importer->pullArticleStatus($article, $localization->locale);
+            $importer->pullArticleMeta($article, $localization->locale);
         }
 
         return self::SUCCESS;

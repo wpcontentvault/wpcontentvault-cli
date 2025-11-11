@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Vault\Manifest\V2;
 
+use App\Enum\Wordpress\ArticleStatusEnum;
 use App\Models\Category;
 use DateTimeInterface;
 use RuntimeException;
@@ -30,6 +31,15 @@ class ManifestUpdater
 
         $json['published_at'] = $publishedAt->format('Y-m-d H:i:s');
         $json['modified_at'] = $modifiedAt->format('Y-m-d H:i:s');
+
+        $this->serialize($path, $name, $json);
+    }
+
+    public function updateStatus(string $path, string $name, ArticleStatusEnum $status): void
+    {
+        $json = $this->deserialize($path, $name);
+
+        $json['status'] = $status->value;
 
         $this->serialize($path, $name, $json);
     }
