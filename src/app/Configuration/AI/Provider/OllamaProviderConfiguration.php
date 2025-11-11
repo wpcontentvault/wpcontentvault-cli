@@ -21,7 +21,8 @@ class OllamaProviderConfiguration implements AiProviderConfigurationInterface
     public function getModelName(AiModelEnum $model): string
     {
         return match ($model) {
-            AiModelEnum::CLAUSE_SONNET_3_5 => '',
+            AiModelEnum::CLAUDE_SONNET_3_5 => '',
+            AiModelEnum::CLAUDE_SONNET_4_5 => '',
             AiModelEnum::DEEPSEEK_V3 => '',
             AiModelEnum::MXBAI_EMBED_LARGE => 'mxbai-embed-large',
             AiModelEnum::GEMMA_3 => 'gemma3:12b',
@@ -58,5 +59,13 @@ class OllamaProviderConfiguration implements AiProviderConfigurationInterface
         }
 
         return $params;
+    }
+
+    public function buildEmbeddingParams(AiRequestConfiguration $aiConfig, string $text): array
+    {
+        return [
+            'model' => $this->getModelName($aiConfig->getModel()),
+            'prompt' => $text,
+        ];
     }
 }

@@ -6,10 +6,11 @@ namespace App\Enum\AI;
 
 enum AiModelEnum: string
 {
-    case CLAUSE_SONNET_3_5 = 'claude_sonnet_3_5';
+    case CLAUDE_SONNET_3_5 = 'claude_sonnet_3_5';
+    case CLAUDE_SONNET_4_5 = 'claude_sonnet_4_5';
     case DEEPSEEK_V3 = 'deepseek_v3';
     case MXBAI_EMBED_LARGE = 'mxbai_embed_large';
-    case MISTRAL_EMBED = 'mistral-embed-2312';
+    case MISTRAL_EMBED = 'mistral_embed_2312';
     case GEMMA_3 = 'gemma_3';
     case DEEPSEEK_R1 = 'deepseek_r1';
     case GPT_OSS = 'gpt_oss';
@@ -17,7 +18,7 @@ enum AiModelEnum: string
     public function getSafeContentLength(): int
     {
         return match ($this) {
-            self::CLAUSE_SONNET_3_5 => 16_000,
+            self::CLAUDE_SONNET_3_5 => 16_000,
             self::DEEPSEEK_V3 => 16_000,
             self::DEEPSEEK_R1 => 16_000,
             self::GEMMA_3 => 16_000,

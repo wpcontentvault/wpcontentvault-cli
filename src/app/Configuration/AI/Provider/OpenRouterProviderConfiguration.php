@@ -20,7 +20,8 @@ class OpenRouterProviderConfiguration implements AiProviderConfigurationInterfac
     public function getModelName(AiModelEnum $model): string
     {
         return match ($model) {
-            AiModelEnum::CLAUSE_SONNET_3_5 => 'anthropic/claude-3.5-sonnet',
+            AiModelEnum::CLAUDE_SONNET_3_5 => 'anthropic/claude-3.5-sonnet',
+            AiModelEnum::CLAUDE_SONNET_4_5 => 'anthropic/claude-4.5-sonnet',
             AiModelEnum::DEEPSEEK_V3 => 'deepseek/deepseek-chat',
             AiModelEnum::GPT_OSS => 'openai/gpt-oss-120b',
             AiModelEnum::MISTRAL_EMBED => 'mistralai/mistral-embed-2312',
@@ -58,5 +59,13 @@ class OpenRouterProviderConfiguration implements AiProviderConfigurationInterfac
         }
 
         return $params;
+    }
+
+    public function buildEmbeddingParams(AiRequestConfiguration $aiConfig, string $text): array
+    {
+        return [
+            'model' => $this->getModelName($aiConfig->getModel()),
+            'input' => $text,
+        ];
     }
 }

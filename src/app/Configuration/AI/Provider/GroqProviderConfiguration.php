@@ -55,4 +55,9 @@ class GroqProviderConfiguration implements AiProviderConfigurationInterface
 
         return $params;
     }
+
+    public function buildEmbeddingParams(AiRequestConfiguration $aiConfig, string $text): array
+    {
+        throw new \RuntimeException('Not supported by this provider!');
+    }
 }

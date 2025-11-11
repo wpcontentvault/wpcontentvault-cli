@@ -22,12 +22,9 @@ class OpenAiCompatibleClient implements ChatClientInterface
         AiRequestConfiguration $aiConfig, string $text
     ): array
     {
-        $params = [
-            'model' => $aiConfig->getProviderConfiguration()->getModelName($aiConfig->getModel()),
-            'prompt' => $text,
-        ];
-
         $providerConfig = $aiConfig->getProviderConfiguration();
+
+        $params = $providerConfig->buildEmbeddingParams($aiConfig, $text);
 
         $response = $this->prepareRequest($providerConfig)
             ->post($providerConfig->getEmbeddingsUrl(), $params);
@@ -38,11 +35,17 @@ class OpenAiCompatibleClient implements ChatClientInterface
 
         $data = $response->json();
 
-        if (false === isset($data['embedding'])) {
-            throw new AIClientException($response->body());
+        //ollama response
+        if (isset($data['embedding'])) {
+            return $data['embedding'];
         }
 
-        return $data['embedding'];
+        //openrouter response
+        if(isset($data['data'][0]['embedding'])) {
+            return $data['data'][0]['embedding'];
+        }
+
+        throw new AIClientException($response->body());
     }
 
     public function completions(

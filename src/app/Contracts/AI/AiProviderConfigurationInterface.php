@@ -18,4 +18,6 @@ interface AiProviderConfigurationInterface
     public function getAuthToken(): string;
 
     public function buildRequestParams(AiRequestConfiguration $aiConfig): array;
+
+    public function buildEmbeddingParams(AiRequestConfiguration $aiConfig, string $text): array;
 }
