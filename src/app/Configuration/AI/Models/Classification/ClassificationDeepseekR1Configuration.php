@@ -27,4 +27,9 @@ class ClassificationDeepseekR1Configuration implements AiModelConfigurationInter
     {
         return null;
     }
+
+    public function supportsSchema(): bool
+    {
+        return false;
+    }
 }

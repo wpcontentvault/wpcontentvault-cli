@@ -7,6 +7,7 @@ namespace App\Services\AI\Client;
 use App\Configuration\AI\AiRequestConfiguration;
 use App\Context\AI\Responses\ChatCompletionResponse;
 use App\Context\AI\Responses\ToolCall;
+use App\Context\AI\Schema\ResponseFormat;
 use App\Contracts\AI\AiProviderConfigurationInterface;
 use App\Contracts\AI\ChatClientInterface;
 use App\Enum\AI\FinishReason;
@@ -41,7 +42,7 @@ class OpenAiCompatibleClient implements ChatClientInterface
         }
 
         //openrouter response
-        if(isset($data['data'][0]['embedding'])) {
+        if (isset($data['data'][0]['embedding'])) {
             return $data['data'][0]['embedding'];
         }
 
@@ -49,7 +50,7 @@ class OpenAiCompatibleClient implements ChatClientInterface
     }
 
     public function completions(
-        AiRequestConfiguration $aiConfig, array $messages = [], array $tools = [], bool $json = false): ChatCompletionResponse
+        AiRequestConfiguration $aiConfig, array $messages = [], array $tools = [], ResponseFormat $format = null): ChatCompletionResponse
     {
         $params = $aiConfig->getProviderConfiguration()->buildRequestParams($aiConfig);
 
@@ -59,10 +60,8 @@ class OpenAiCompatibleClient implements ChatClientInterface
             $params['tools'] = $tools;
         }
 
-        if ($json) {
-            $params['response_format'] = [
-                'type' => 'json_object',
-            ];
+        if (null !== $format) {
+            $params = array_merge($format->toArray($aiConfig->getModelConfiguration()), $params);
         }
 
         $response = $this->prepareRequest($aiConfig->getProviderConfiguration())

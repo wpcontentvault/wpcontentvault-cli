@@ -27,4 +27,9 @@ class SummarizeGptOssConfiguration implements AiModelConfigurationInterface
     {
         return 'medium';
     }
+
+    public function supportsSchema(): bool
+    {
+        return true;
+    }
 }

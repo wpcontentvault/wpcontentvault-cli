@@ -27,4 +27,9 @@ class EmptyConfiguration implements AiModelConfigurationInterface
     {
         return null;
     }
+
+    public function supportsSchema(): bool
+    {
+        return false;
+    }
 }

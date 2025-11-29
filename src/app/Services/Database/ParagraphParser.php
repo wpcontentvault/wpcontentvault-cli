@@ -46,10 +46,11 @@ class ParagraphParser
 
         /** @var GutenbergBlock $block */
         foreach ($gutenbergBlocks as $index => $block) {
-            if($block instanceof Code) {
+            if ($block instanceof Code) {
                 //TODO: fix attributes for custom blocks not preserved. Maybe fetch original block content
-                $content = "```\n{$block->getContent()}\n```";
-            }else{
+                $content = rtrim($block->getContent(), "\n");
+                $content = "```\n{$content}\n```";
+            } else {
                 $html = "<html>{$block->getHTML($this->configuration)}</html>";
                 $content = $converter->convert($html);
             }

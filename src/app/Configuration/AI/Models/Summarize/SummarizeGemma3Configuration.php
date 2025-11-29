@@ -27,4 +27,9 @@ class SummarizeGemma3Configuration implements AiModelConfigurationInterface
     {
         return null;
     }
+
+    public function supportsSchema(): bool
+    {
+        return false;
+    }
 }

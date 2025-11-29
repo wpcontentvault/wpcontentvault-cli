@@ -27,4 +27,9 @@ class ClassificationGptOssConfiguration implements AiModelConfigurationInterface
     {
         return 'high';
     }
+
+    public function supportsSchema(): bool
+    {
+        return true;
+    }
 }

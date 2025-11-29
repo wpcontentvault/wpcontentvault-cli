@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Configuration\AI\Provider;
 
 use App\Configuration\AI\AiRequestConfiguration;
-use App\Contracts\AI\AiModelConfigurationInterface;
 use App\Contracts\AI\AiProviderConfigurationInterface;
 use App\Enum\AI\AiModelEnum;
 

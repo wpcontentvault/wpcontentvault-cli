@@ -21,7 +21,7 @@ class ImageRenderer implements BlockHtmlRendererInterface
         $attributes = $block->getAttributes();
         $src = $attributes['external_url'] ?? $attributes['src'] ?? '';
         $alt = $attributes['alt'];
-        $externalId = $attributes['external_id'] !== null ? intval($attributes['external_id']) : null;
+        $externalId = ($attributes['external_id'] ?? null) !== null ? intval($attributes['external_id']) : null;
 
         $fileUrl = $attributes['file_url'] ?? '';
         if (str_ends_with($fileUrl, '.m4v') || str_ends_with($fileUrl, '.webm')) {

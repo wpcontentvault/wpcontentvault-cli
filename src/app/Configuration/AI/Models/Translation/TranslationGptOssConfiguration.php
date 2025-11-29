@@ -27,4 +27,9 @@ class TranslationGptOssConfiguration implements AiModelConfigurationInterface
     {
         return null;
     }
+
+    public function supportsSchema(): bool
+    {
+        return true;
+    }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Translation;
 
 use App\Context\AI\Chat\ChatMessagesBag;
+use App\Context\AI\Schema\ResponseFormat;
 use App\Context\AI\Tools\ToolsCollection;
 use App\Context\AI\TranslationResult;
 use App\Context\Translation\TranslationHistoryItem;
@@ -182,7 +183,7 @@ Preserve all markdown markup. That is very important!
 Do not add escape characters for config file paths!
 Do not decode encoded html entities!
 
-Output final result only as a json object with two fields.
+Output final result only as a JSON object with two fields.
 The first field named text with translated text and the second field named comments if you need to add any notices.
 SYSTEM;
 
@@ -223,11 +224,17 @@ SYSTEM;
 
         $messages->addUserMessage($text);
 
+        $format = new ResponseFormat();
+        $format->json();
+        $format->schema()->name('translation_result');
+        $format->schema()->addString('text', 'translation result');
+        $format->schema()->addString('comments', 'your comments and notices about translation');
+
         $result = $this->aiService->completions(
             $this->aiSettings->getTranslationConfiguration(),
             $messages,
             new ToolsCollection,
-            true
+            $format
         );
 
         $content = str_replace('```json', '', $result->content);

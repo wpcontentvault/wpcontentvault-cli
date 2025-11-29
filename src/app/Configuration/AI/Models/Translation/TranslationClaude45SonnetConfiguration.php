@@ -27,4 +27,9 @@ class TranslationClaude45SonnetConfiguration implements AiModelConfigurationInte
     {
         return null;
     }
+
+    public function supportsSchema(): bool
+    {
+        return true;
+    }
 }

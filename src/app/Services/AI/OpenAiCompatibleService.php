@@ -9,6 +9,7 @@ use App\Context\AI\Chat\ChatMessagesBag;
 use App\Context\AI\ChatCompletionResult;
 use App\Context\AI\Responses\ChatCompletionResponse;
 use App\Context\AI\Responses\ToolCall;
+use App\Context\AI\Schema\ResponseFormat;
 use App\Context\AI\Tools\ToolsCollection;
 use App\Enum\AI\FinishReason;
 use App\Exceptions\AIClientException;
@@ -51,7 +52,7 @@ class OpenAiCompatibleService
         AiRequestConfiguration $aiConfig,
         ChatMessagesBag        $messagesBag,
         ToolsCollection        $tools,
-        bool                   $json = false
+        ResponseFormat         $format = null,
     ): ChatCompletionResult
     {
         $messages = $messagesBag->toArray();
@@ -74,12 +75,12 @@ class OpenAiCompatibleService
                 throw new RuntimeException('Too many attempts!');
             }
 
-            $response = $this->safeCall(function () use ($aiConfig, $messages, $tools, $json) {
+            $response = $this->safeCall(function () use ($aiConfig, $messages, $tools, $format) {
                 return $this->client->completions(
                     $aiConfig,
                     $messages,
                     $tools->getArray(),
-                    $json
+                    $format
                 );
             });
 

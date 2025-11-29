@@ -27,4 +27,9 @@ class ClassificationClaude35Configuration implements AiModelConfigurationInterfa
     {
         return null;
     }
+
+    public function supportsSchema(): bool
+    {
+        return false;
+    }
 }

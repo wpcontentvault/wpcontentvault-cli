@@ -3,6 +3,7 @@
 namespace App\Services\Summarization;
 
 use App\Context\AI\Chat\ChatMessagesBag;
+use App\Context\AI\Schema\ResponseFormat;
 use App\Context\AI\SelectCategoryResult;
 use App\Context\AI\SummarizationResult;
 use App\Context\AI\Tools\ToolsCollection;
@@ -45,7 +46,7 @@ SYSTEM;
             $this->aiSettings->getSummarizeConfiguration(),
             $messages,
             new ToolsCollection,
-            false
+            (new ResponseFormat())->json()
         );
 
         dump($result->reasoning);

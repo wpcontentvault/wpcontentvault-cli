@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Database\Cleaner;
 
+use App\Models\Article;
 use App\Models\Paragraph;
 use App\Repositories\ParagraphRepository;
 
@@ -27,5 +28,15 @@ class ParagraphCleaner
         $this->paragraphs->getStaleQuery()->each(function (Paragraph $paragraph): void {
             $paragraph->delete();
         });
+    }
+
+    public function removeTranslatedParagraphs(Article $article): void
+    {
+        $originalLocale = $article->locale;
+
+        $this->paragraphs->createQuery()
+            ->where('article_id', $article->getKey())
+            ->whereNot('locale_id', $originalLocale->getKey())
+            ->delete();
     }
 }

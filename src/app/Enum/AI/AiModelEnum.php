@@ -19,6 +19,7 @@ enum AiModelEnum: string
     {
         return match ($this) {
             self::CLAUDE_SONNET_3_5 => 16_000,
+            self::CLAUDE_SONNET_4_5 => 16_000,
             self::DEEPSEEK_V3 => 16_000,
             self::DEEPSEEK_R1 => 16_000,
             self::GEMMA_3 => 16_000,

@@ -13,4 +13,6 @@ interface AiModelConfigurationInterface
     public function getTopP(): float;
 
     public function getReasoningEffort(): ?string;
+
+    public function supportsSchema(): bool;
 }

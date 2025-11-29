@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Classification;
 
 use App\Context\AI\Chat\ChatMessagesBag;
+use App\Context\AI\Schema\ResponseFormat;
 use App\Context\AI\SelectCategoryResult;
 use App\Context\AI\SelectTagsResult;
 use App\Context\AI\Tools\ToolsCollection;
@@ -103,7 +104,7 @@ SYSTEM;
             $this->aiSettings->getClassificationConfiguration(),
             $messages,
             new ToolsCollection,
-            true
+            (new ResponseFormat())->json()
         );
 
         $data = json_decode($result->content, true);
@@ -162,7 +163,7 @@ SYSTEM;
             $this->aiSettings->getClassificationConfiguration(),
             $messages,
             new ToolsCollection,
-            true
+            (new ResponseFormat())->json()
         );
 
         $data = json_decode($result->content, true);
