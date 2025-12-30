@@ -7,7 +7,7 @@ namespace App\Enum\Wordpress;
 enum ArticleStatusEnum: string
 {
     case DRAFT = 'draft';
-    case PUBLISHED = 'published';
+    case PUBLISHED = 'publish';
     case PENDING = 'pending';
     case FUTURE = 'future';
     case PRIVATE = 'private';

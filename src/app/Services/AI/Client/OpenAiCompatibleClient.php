@@ -87,6 +87,10 @@ class OpenAiCompatibleClient implements ChatClientInterface
             throw new AIClientException(json_encode($data));
         }
 
+        if ($data['choices'][0]['finish_reason'] === null) {
+            throw new AIClientException(json_encode($data));
+        }
+
         return new ChatCompletionResponse(
             finishReason: FinishReason::from($data['choices'][0]['finish_reason']),
             promptTokens: $data['usage']['prompt_tokens'],
