@@ -183,8 +183,9 @@ Preserve all markdown markup. That is very important!
 Do not add escape characters for config file paths!
 Do not decode encoded html entities!
 
-Output final result only as a JSON object with two fields.
+Output final result only as a valid JSON object with two fields.
 The first field named text with translated text and the second field named comments if you need to add any notices.
+All newline characters in json string values must have backslash like \\n to preserve valid JSON.
 SYSTEM;
 
         if ($options->isHeading) {

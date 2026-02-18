@@ -22,6 +22,11 @@ class PreviewExporter
     {
 
         $meta = $this->manifestReader->loadManifestFromPath($path, $name);
+
+        if (false === $this->sites->hasSiteConnectorForLocale($meta->locale)) {
+            return;
+        }
+
         $connector = $this->sites->getSiteConnectorByLocale($meta->locale);
 
         if ($name === 'original') {

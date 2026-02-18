@@ -21,6 +21,11 @@ class PostMetaUpdater
     public function updateTitleAndCategory(string $path, string $name): void
     {
         $meta = $this->manifestReader->loadManifestFromPath($path, $name);
+
+        if(false === $this->sites->hasSiteConnectorForLocale($meta->locale)) {
+            return;
+        }
+
         $connector = $this->sites->getSiteConnectorByLocale($meta->locale);
 
         $connector->setPostTitle($meta->externalId, $meta->title);

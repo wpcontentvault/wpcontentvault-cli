@@ -24,7 +24,7 @@ class ArticleRepository extends AbstractRepository
 
     public function getAllArticles(): Collection
     {
-        return Article::all();
+        return Article::query()->orderBy('published_at', 'desc')->get();
     }
 
     public function getArticlesByYear(int $year): Collection
