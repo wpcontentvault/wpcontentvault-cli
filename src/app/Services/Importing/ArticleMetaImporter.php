@@ -49,5 +49,13 @@ class ArticleMetaImporter
             $postData->publishedAt,
             $postData->modifiedAt,
         );
+
+        if(false === empty($postData->url)) {
+            $this->manifestUpdater->updateUrl(
+                $article->path,
+                $name,
+                $postData->url,
+            );
+        }
     }
 }

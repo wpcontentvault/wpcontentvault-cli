@@ -31,6 +31,7 @@ class SitemapBuilder
         CarbonImmutable $lastModified,
         float           $priorityValue,
         AlternateLinks  $alternateLinks,
+        string          $default = null
     ): self
     {
         $url = $this->sitemapDom->createElement('url');
@@ -50,6 +51,14 @@ class SitemapBuilder
             $xlink->setAttribute('href', $link->url);
             $xlink->setAttribute('hreflang', $link->locale);
             $url->appendChild($xlink);
+        }
+
+        if(null !== $default) {
+            $defaultLink = $this->sitemapDom->createElement('xtml:link');
+            $defaultLink->setAttribute('rel', 'alternate');
+            $defaultLink->setAttribute('href', $default);
+            $defaultLink->setAttribute('hreflang', 'x-default');
+            $url->appendChild($defaultLink);
         }
 
         $lastMod = $this->sitemapDom->createElement('lastmod');

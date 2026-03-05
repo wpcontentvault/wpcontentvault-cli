@@ -22,7 +22,7 @@ class PostMetaUpdater
     {
         $meta = $this->manifestReader->loadManifestFromPath($path, $name);
 
-        if(false === $this->sites->hasSiteConnectorForLocale($meta->locale)) {
+        if (false === $this->sites->hasSiteConnectorForLocale($meta->locale)) {
             return;
         }
 
@@ -37,6 +37,20 @@ class PostMetaUpdater
             $this->output->info("Category not set for article {$meta->externalId}");
         }
     }
+
+    public function updateAuthor(string $path, string $name): void
+    {
+        $meta = $this->manifestReader->loadManifestFromPath($path, $name);
+
+        if (false === $this->sites->hasSiteConnectorForLocale($meta->locale)) {
+            return;
+        }
+
+        $connector = $this->sites->getSiteConnectorByLocale($meta->locale);
+
+        $connector->setPostAuthor($meta->externalId, $meta->author);
+    }
+
 
     public function updateTags(string $path, string $name): void
     {

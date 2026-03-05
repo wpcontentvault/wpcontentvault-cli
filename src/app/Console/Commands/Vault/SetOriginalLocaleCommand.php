@@ -49,7 +49,7 @@ class SetOriginalLocaleCommand extends AbstractApplicationCommand
 
         $originalMeta = $manifestLoader->loadManifestFromPath($article->path, 'original');
 
-        if ($article->locale !== $originalMeta->locale) {
+        if ($article->locale->code !== $originalMeta->locale->code) {
             $this->error("Article original locale form DB and in Manifest mismatch.");
 
             return self::FAILURE;
@@ -78,6 +78,9 @@ class SetOriginalLocaleCommand extends AbstractApplicationCommand
 
         rename($article->path . 'temp_original.json', $article->path . $oldOriginalCode . '.json');
         rename($article->path . 'temp_original.md', $article->path . $oldOriginalCode . '.md');
+
+        $article->locale()->associate($originalMeta->locale);
+        $article->save();
 
         return self::SUCCESS;
     }

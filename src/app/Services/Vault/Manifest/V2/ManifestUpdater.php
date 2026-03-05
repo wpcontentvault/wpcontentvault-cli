@@ -25,6 +25,15 @@ class ManifestUpdater
         $this->serialize($path, $name, $json);
     }
 
+    public function updateUrl(string $path, string $name, string $url): void
+    {
+        $json = $this->deserialize($path, $name);
+
+        $json['url'] = $url;
+
+        $this->serialize($path, $name, $json);
+    }
+
     public function updatePublishedAndModifiedDates(string $path, string $name, DateTimeInterface $publishedAt, DateTimeInterface $modifiedAt): void
     {
         $json = $this->deserialize($path, $name);
