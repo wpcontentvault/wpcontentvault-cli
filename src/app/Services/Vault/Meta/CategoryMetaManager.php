@@ -7,14 +7,17 @@ namespace App\Services\Vault\Meta;
 use App\Context\Taxonomy\TagAttrs;
 use App\Context\Taxonomy\TagMeta;
 use App\Models\Locale;
+use App\Services\Vault\VaultPathResolver;
 
-class TagMetaManager extends MetadataManager
+class CategoryMetaManager extends MetadataManager
 {
-    public function __construct() {}
+    public function __construct(
+        private VaultPathResolver     $vaultPathResolver,
+    ) {}
 
-    public function readTagAttrs(string $path): ?TagAttrs
+    public function readTagAttrs(string $slug): ?TagAttrs
     {
-        $filePath = $this->resolveFilePath($path, '', 'attrs.json');
+        $filePath = $this->resolveFilePath($this->vaultPathResolver->getRoot(), 'tags/' . $slug, 'attrs.json');
 
         if (file_exists($filePath) === false) {
             return null;
@@ -29,9 +32,9 @@ class TagMetaManager extends MetadataManager
         );
     }
 
-    public function readTagMeta(string $path, Locale $locale): ?TagMeta
+    public function readTagMeta(string $slug, Locale $locale): ?TagMeta
     {
-        $filePath = $this->resolveFilePath($path, '', $locale->code . '.json');
+        $filePath = $this->resolveFilePath($this->vaultPathResolver->getRoot(), 'tags/' . $slug, $locale->code . '.json');
 
         if (file_exists($filePath) === false) {
             return null;
@@ -44,13 +47,12 @@ class TagMetaManager extends MetadataManager
             name: $json['name'],
             url: $json['url'] ?? null,
             externalId: $json['external_id'],
-            slug: $json['slug'] ?? null,
         );
     }
 
-    public function writeTagAttrs(string $path, TagAttrs $meta): void
+    public function writeTagAttrs(TagAttrs $meta): void
     {
-        $filePath = $this->resolveFilePath($path, '', 'attrs.json');
+        $filePath = $this->resolveFilePath($this->vaultPathResolver->getRoot(), 'tags/' . $meta->slug, 'attrs.json');
 
         $data = [
             'slug' => $meta->slug,
@@ -63,41 +65,15 @@ class TagMetaManager extends MetadataManager
         );
     }
 
-    public function writeTagMeta(string $path, TagMeta $meta, Locale $locale): void
+    public function writeTagMeta(string $slug, TagMeta $meta, Locale $locale): void
     {
-        $filePath = $this->resolveFilePath($path, '', $locale->code . '.json');
+        $filePath = $this->resolveFilePath($this->vaultPathResolver->getRoot(), 'tags/' . $slug, $locale->code . '.json');
 
         $data = [
             'name' => $meta->name,
             'url' => $meta->url,
             'external_id' => $meta->externalId,
         ];
-
-        if(null !== $meta->slug) {
-            $data['slug'] = $meta->slug;
-        }
-
-        file_put_contents(
-            $filePath,
-            json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
-        );
-    }
-
-    public function updateExternalIdAndUrl(string $path, Locale $locale, int $externalId, string $url): void
-    {
-        $filePath = $this->resolveFilePath($path, '', $locale->code . '.json');
-
-        $meta = $this->readTagMeta($path, $locale);
-
-        $data = [
-            'name' => $meta->name,
-            'url' => $url,
-            'external_id' => $externalId,
-        ];
-
-        if(null !== $meta->slug) {
-            $data['slug'] = $meta->slug;
-        }
 
         file_put_contents(
             $filePath,

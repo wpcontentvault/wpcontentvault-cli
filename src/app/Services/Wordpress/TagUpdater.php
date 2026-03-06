@@ -29,6 +29,5 @@ class TagUpdater
         $connector = $this->sites->getSiteConnectorByLocale($locale);
 
         $connector->setTermName($meta->externalId, TaxonomyType::TAG, $meta->name);
-        $connector->setTermSlug($meta->externalId, TaxonomyType::TAG, $attrs->slug);
     }
 }

@@ -9,8 +9,7 @@ use App\Models\TagCategory;
 class TagAttrs
 {
     public function __construct(
-        public readonly string      $slug,
-        public readonly TagCategory $category,
-        public readonly ?string      $description = null,
+        public readonly string  $slug,
+        public readonly ?string $description = null,
     ) {}
 }

@@ -6,6 +6,7 @@ namespace App\Console\Commands\Upload;
 
 use App\Configuration\GlobalConfiguration;
 use App\Console\Commands\AbstractApplicationCommand;
+use App\Repositories\TagRepository;
 use App\Services\Exporting\TagExporter;
 use App\Services\Vault\Iterator\TagDirectoryIterator;
 
@@ -16,7 +17,7 @@ class UploadTagsCommand extends AbstractApplicationCommand
      *
      * @var string
      */
-    protected $signature = 'upload-tags';
+    protected $signature = 'upload-tags {--update}';
 
     /**
      * The console command description.
@@ -29,9 +30,9 @@ class UploadTagsCommand extends AbstractApplicationCommand
      * Execute the console command.
      */
     public function handle(
-        TagDirectoryIterator $tagIterator,
-        TagExporter          $exporter,
-        GlobalConfiguration  $configuration,
+        TagRepository       $tagRepository,
+        TagExporter         $exporter,
+        GlobalConfiguration $configuration,
     ): int
     {
         $updateTagIds = $this->option('update') ?? false;
@@ -39,9 +40,10 @@ class UploadTagsCommand extends AbstractApplicationCommand
             $configuration->updateTagIds($updateTagIds);
         }
 
-        foreach ($tagIterator->getTagDirectories() as $dir) {
-            /** @var \SplFileInfo $dir */
-            $exporter->exportTag($dir->getBasename());
+        $tagsList = $tagRepository->getAllTags();
+
+        foreach ($tagsList as $tag) {
+            $exporter->exportTag($tag->path);
         }
 
         return self::SUCCESS;

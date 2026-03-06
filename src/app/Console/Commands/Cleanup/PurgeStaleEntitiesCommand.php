@@ -8,7 +8,6 @@ use App\Models\Image;
 use App\Registry\SitesRegistry;
 use App\Repositories\ImageRepository;
 use App\Services\Database\Cleaner\ParagraphCleaner;
-use App\Services\Database\Cleaner\TagCategoryCleaner;
 use App\Services\Database\Cleaner\TagCleaner;
 use Illuminate\Console\Command;
 
@@ -34,7 +33,6 @@ class PurgeStaleEntitiesCommand extends Command
     public function handle(
         ParagraphCleaner $paragraphCleaner,
         TagCleaner $tagCleaner,
-        TagCategoryCleaner $tagCategoryCleaner,
         ImageRepository $images,
         SitesRegistry $configuration
     ): int {
@@ -42,7 +40,6 @@ class PurgeStaleEntitiesCommand extends Command
 
         $paragraphCleaner->removeStaleParagraphs();
         $tagCleaner->removeStaleTags();
-        $tagCategoryCleaner->removeStaleCategories();
 
         $images->getStaleQuery()->each(function (Image $img): void {
             // $mainSite->deleteAttachment($img->external_id);

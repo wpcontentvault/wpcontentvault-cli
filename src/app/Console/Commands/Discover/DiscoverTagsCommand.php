@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Console\Commands\Discover;
 
 use App\Console\Commands\AbstractApplicationCommand;
-use App\Services\Vault\Taxonomy\TagCategoryDiscoverer;
 use App\Services\Vault\Taxonomy\TagDiscoverer;
 
 class DiscoverTagsCommand extends AbstractApplicationCommand
@@ -28,11 +27,9 @@ class DiscoverTagsCommand extends AbstractApplicationCommand
      * Execute the console command.
      */
     public function handle(
-        TagCategoryDiscoverer $tagCategoryDiscoverer,
         TagDiscoverer $tagDiscoverer
     ): int
     {
-        $tagCategoryDiscoverer->discoverTagCategories();
         $tagDiscoverer->discoverAllTags();
 
         return self::SUCCESS;

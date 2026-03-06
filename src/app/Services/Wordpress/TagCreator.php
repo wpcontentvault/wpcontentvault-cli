@@ -9,6 +9,7 @@ use App\Context\Taxonomy\TagMeta;
 use App\Models\Locale;
 use App\Registry\SitesRegistry;
 use App\Services\Console\ApplicationOutput;
+use WPAjaxConnector\WPAjaxConnectorPHP\Objects\TagData;
 
 class TagCreator
 {
@@ -17,7 +18,7 @@ class TagCreator
         private ApplicationOutput $applicationOutput,
     ) {}
 
-    public function createTag(TagAttrs $attrs, TagMeta $meta, Locale $locale): ?int
+    public function createTag(TagAttrs $attrs, TagMeta $meta, Locale $locale): ?TagData
     {
         if (null !== $meta->externalId) {
             $this->applicationOutput->warning("Tag {$attrs->slug} external_id is not null, it will be overridden!");
@@ -31,6 +32,8 @@ class TagCreator
 
         $connector = $this->sites->getSiteConnectorByLocale($locale);
 
-        return $connector->addTag($meta->name, $attrs->slug);
+        $slug = $meta->slug ?? $attrs->slug;
+
+        return $connector->addTag($meta->name, $slug);
     }
 }

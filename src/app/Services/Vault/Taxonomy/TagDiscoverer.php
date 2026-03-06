@@ -35,7 +35,13 @@ class TagDiscoverer
 
         foreach ($this->tagIterator->getTagDirectories() as $dir) {
             /** @var \SplFileInfo $dir */
-            $newTagIds[] = $this->discoverTagFromPath($dir->getBasename());
+            $path = $dir->getPathname();
+
+            if (file_exists($path . '/attrs.json') === false) {
+                continue;
+            }
+
+            $newTagIds[] = $this->discoverTagFromPath($path);
         }
 
         $removedTags = array_diff($oldTagIds, $newTagIds);
@@ -58,8 +64,8 @@ class TagDiscoverer
             $existing->slug = $attrs->slug;
         }
 
-        $existing->category()->associate($attrs->category);
         $existing->description = $attrs->description;
+        $existing->path = $path;
         $existing->save();
 
         foreach ($this->localesList as $locale) {
@@ -78,6 +84,7 @@ class TagDiscoverer
             }
 
             $localization->name = $meta->name;
+            $localization->url = $meta->url;
             $localization->external_id = $meta->externalId;
             $localization->save();
         }
