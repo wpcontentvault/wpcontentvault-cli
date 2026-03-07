@@ -19,6 +19,13 @@ class MetadataManager
         return $filePath;
     }
 
+    public function existsDirPath(string $path, string $prefix): bool
+    {
+        $dirPath = $path . $this->getPrefix() . $prefix . '/';
+
+        return file_exists($dirPath);
+    }
+
     protected function getPrefix(): string
     {
         return '/_meta/';

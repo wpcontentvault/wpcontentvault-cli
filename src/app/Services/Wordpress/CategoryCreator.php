@@ -4,36 +4,35 @@ declare(strict_types=1);
 
 namespace App\Services\Wordpress;
 
-use App\Context\Taxonomy\TagAttrs;
-use App\Context\Taxonomy\TagMeta;
+use App\Context\Taxonomy\CategoryMeta;
 use App\Models\Locale;
 use App\Registry\SitesRegistry;
 use App\Services\Console\ApplicationOutput;
 use WPAjaxConnector\WPAjaxConnectorPHP\Objects\TermData;
 
-class TagCreator
+class CategoryCreator
 {
     public function __construct(
         private SitesRegistry     $sites,
         private ApplicationOutput $applicationOutput,
     ) {}
 
-    public function createTag(TagAttrs $attrs, TagMeta $meta, Locale $locale): ?TermData
+    public function createCategory(string $slug, CategoryMeta $meta, Locale $locale): ?TermData
     {
         if (null !== $meta->externalId) {
-            $this->applicationOutput->warning("Tag {$attrs->slug} external_id is not null, it will be overridden!");
+            $this->applicationOutput->warning("Category {$slug} external_id is not null, it will be overridden!");
         }
 
         if (false === $this->sites->hasSiteConnectorForLocale($locale)) {
-            $this->applicationOutput->warning("Tag {$attrs->slug} not created for {$locale->name} locale!");
+            $this->applicationOutput->warning("Category {$slug} not created for {$locale->name} locale!");
 
             return null;
         }
 
         $connector = $this->sites->getSiteConnectorByLocale($locale);
 
-        $slug = $meta->slug ?? $attrs->slug;
+        $slug = $meta->slug ?? $slug;
 
-        return $connector->addTag($meta->name, $slug);
+        return $connector->addCategory($meta->name, $slug);
     }
 }

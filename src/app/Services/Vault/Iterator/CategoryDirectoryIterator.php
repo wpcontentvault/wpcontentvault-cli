@@ -7,13 +7,13 @@ namespace App\Services\Vault\Iterator;
 use App\Services\Vault\VaultPathResolver;
 use Symfony\Component\Finder\Finder;
 
-class TagDirectoryIterator
+class CategoryDirectoryIterator
 {
     public function __construct(
         private VaultPathResolver $pathResolver,
     ) {}
 
-    public function getTagDirectories(): \Generator
+    public function getCategoryDirectories(): \Generator
     {
         $finder = new Finder();
         $finder->name('*')
@@ -21,7 +21,7 @@ class TagDirectoryIterator
             ->notName('..');
         $finder->sortByName();
 
-        $tagsPath = $this->pathResolver->getRoot() . 'tags/';
+        $tagsPath = $this->pathResolver->getRoot() . 'categories/';
 
         foreach ($finder->directories()->in($tagsPath) as $dir) {
             /** @var \SplFileInfo $dir */

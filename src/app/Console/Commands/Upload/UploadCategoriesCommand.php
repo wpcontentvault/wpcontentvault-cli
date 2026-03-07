@@ -6,18 +6,20 @@ namespace App\Console\Commands\Upload;
 
 use App\Configuration\GlobalConfiguration;
 use App\Console\Commands\AbstractApplicationCommand;
+use App\Repositories\CategoryRepository;
 use App\Repositories\TagRepository;
+use App\Services\Exporting\CategoryExporter;
 use App\Services\Exporting\TagExporter;
 use App\Services\Vault\Iterator\TagDirectoryIterator;
 
-class UploadTagsCommand extends AbstractApplicationCommand
+class UploadCategoriesCommand extends AbstractApplicationCommand
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'upload-tags {--update}';
+    protected $signature = 'upload-categories {--update}';
 
     /**
      * The console command description.
@@ -30,8 +32,8 @@ class UploadTagsCommand extends AbstractApplicationCommand
      * Execute the console command.
      */
     public function handle(
-        TagRepository       $tagRepository,
-        TagExporter         $exporter,
+        CategoryRepository       $categoryRepository,
+        CategoryExporter         $exporter,
         GlobalConfiguration $configuration,
     ): int
     {
@@ -40,10 +42,10 @@ class UploadTagsCommand extends AbstractApplicationCommand
             $configuration->updateTermIds($updateTagIds);
         }
 
-        $tagsList = $tagRepository->getAllTags();
+        $categoriesList = $categoryRepository->getAllCategories();
 
-        foreach ($tagsList as $tag) {
-            $exporter->exportTag($tag->path);
+        foreach ($categoriesList as $category) {
+            $exporter->exportCategory($category->slug);
         }
 
         return self::SUCCESS;

@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace App\Services\Vault\Meta;
 
-use App\Context\Taxonomy\TagAttrs;
-use App\Context\Taxonomy\TagMeta;
+use App\Context\Taxonomy\CategoryMeta;
 use App\Models\Locale;
 use App\Services\Vault\VaultPathResolver;
 
 class CategoryMetaManager extends MetadataManager
 {
     public function __construct(
-        private VaultPathResolver     $vaultPathResolver,
+        private VaultPathResolver $vaultPathResolver,
     ) {}
 
-    public function readTagAttrs(string $slug): ?TagAttrs
+    public function readCategoryMeta(string $slug, Locale $locale): ?CategoryMeta
     {
-        $filePath = $this->resolveFilePath($this->vaultPathResolver->getRoot(), 'tags/' . $slug, 'attrs.json');
+        $filePath = $this->resolveFilePath($this->vaultPathResolver->getRoot(), 'categories/' . $slug, $locale->code . '.json');
+        $dirPath = dirname($filePath);
 
         if (file_exists($filePath) === false) {
             return null;
@@ -26,54 +26,61 @@ class CategoryMetaManager extends MetadataManager
         $data = file_get_contents($filePath);
         $json = json_decode($data, true);
 
-        return new TagAttrs(
-            slug: $json['slug'],
-            description: $json['description'],
-        );
-    }
-
-    public function readTagMeta(string $slug, Locale $locale): ?TagMeta
-    {
-        $filePath = $this->resolveFilePath($this->vaultPathResolver->getRoot(), 'tags/' . $slug, $locale->code . '.json');
-
-        if (file_exists($filePath) === false) {
-            return null;
+        if($json === null) {
+            throw new \RuntimeException("Invalid JSON in file: {$filePath}");
         }
 
-        $data = file_get_contents($filePath);
-        $json = json_decode($data, true);
+        if (file_exists($dirPath . "/{$locale->code}.txt")) {
+            $description = file_get_contents($dirPath . "/{$locale->code}.txt");
+        } else {
+            $description = null;
+        }
 
-        return new TagMeta(
+
+        return new CategoryMeta(
             name: $json['name'],
-            url: $json['url'] ?? null,
+            url: $json['url'],
             externalId: $json['external_id'],
+            description: $description,
         );
     }
 
-    public function writeTagAttrs(TagAttrs $meta): void
+    public function writeCategoryMeta(string $slug, CategoryMeta $meta, Locale $locale): void
     {
-        $filePath = $this->resolveFilePath($this->vaultPathResolver->getRoot(), 'tags/' . $meta->slug, 'attrs.json');
+        $filePath = $this->resolveFilePath($this->vaultPathResolver->getRoot(), 'categories/' . $slug, $locale->code . '.json');
+        $dirPath = dirname($filePath);
 
         $data = [
-            'slug' => $meta->slug,
-            'description' => $meta->description,
+            'name' => $meta->name,
+            'external_id' => $meta->externalId,
+            'url' => $meta->url,
         ];
 
         file_put_contents(
             $filePath,
             json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
         );
+
+        if (null !== $meta->description) {
+            file_put_contents($dirPath . "/{$locale->code}.txt", $meta->description);
+        }
     }
 
-    public function writeTagMeta(string $slug, TagMeta $meta, Locale $locale): void
+    public function updateExternalIdAndUrl(string $slug, Locale $locale, int $externalId, string $url): void
     {
-        $filePath = $this->resolveFilePath($this->vaultPathResolver->getRoot(), 'tags/' . $slug, $locale->code . '.json');
+        $filePath = $this->resolveFilePath($this->vaultPathResolver->getRoot(), 'categories/' . $slug, $locale->code . '.json');
+
+        $meta = $this->readCategoryMeta($slug, $locale);
 
         $data = [
             'name' => $meta->name,
-            'url' => $meta->url,
-            'external_id' => $meta->externalId,
+            'url' => $url,
+            'external_id' => $externalId,
         ];
+
+        if (null !== $meta->slug) {
+            $data['slug'] = $meta->slug;
+        }
 
         file_put_contents(
             $filePath,

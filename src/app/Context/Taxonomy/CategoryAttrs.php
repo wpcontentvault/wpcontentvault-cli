@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Context\Taxonomy;
 
-class TagAttrs
+class CategoryAttrs
 {
     public function __construct(
         public readonly string  $slug,
-        public readonly ?string $description = null,
     ) {}
 }

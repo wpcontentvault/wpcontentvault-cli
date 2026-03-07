@@ -25,13 +25,13 @@ class TagMetaManager extends MetadataManager
 
         return new TagAttrs(
             slug: $json['slug'],
-            description: $json['description'],
         );
     }
 
     public function readTagMeta(string $path, Locale $locale): ?TagMeta
     {
         $filePath = $this->resolveFilePath($path, '', $locale->code . '.json');
+        $dirPath = dirname($filePath);
 
         if (file_exists($filePath) === false) {
             return null;
@@ -40,11 +40,18 @@ class TagMetaManager extends MetadataManager
         $data = file_get_contents($filePath);
         $json = json_decode($data, true);
 
+        if (file_exists($dirPath . "/{$locale->code}.txt")) {
+            $description = file_get_contents($dirPath . "/{$locale->code}.txt");
+        } else {
+            $description = null;
+        }
+
         return new TagMeta(
             name: $json['name'],
             url: $json['url'] ?? null,
             externalId: $json['external_id'],
             slug: $json['slug'] ?? null,
+            description: $description,
         );
     }
 
@@ -54,7 +61,6 @@ class TagMetaManager extends MetadataManager
 
         $data = [
             'slug' => $meta->slug,
-            'description' => $meta->description,
         ];
 
         file_put_contents(
@@ -66,6 +72,7 @@ class TagMetaManager extends MetadataManager
     public function writeTagMeta(string $path, TagMeta $meta, Locale $locale): void
     {
         $filePath = $this->resolveFilePath($path, '', $locale->code . '.json');
+        $dirPath = dirname($filePath);
 
         $data = [
             'name' => $meta->name,
@@ -81,6 +88,10 @@ class TagMetaManager extends MetadataManager
             $filePath,
             json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
         );
+
+        if (null !== $meta->description) {
+            file_put_contents($dirPath . "/{$locale->code}.txt", $meta->description);
+        }
     }
 
     public function updateExternalIdAndUrl(string $path, Locale $locale, int $externalId, string $url): void

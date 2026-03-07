@@ -64,7 +64,6 @@ class TagDiscoverer
             $existing->slug = $attrs->slug;
         }
 
-        $existing->description = $attrs->description;
         $existing->path = $path;
         $existing->save();
 
