@@ -30,12 +30,18 @@ class PostMetaUpdater
 
         $connector->setPostTitle($meta->externalId, $meta->title);
 
-        if ($meta->category !== null) {
-            $categoryLocalization = $meta->category->findLocalizationByLocale($meta->locale);
-            $connector->setPostCategory($meta->externalId, $categoryLocalization->external_id);
-        } else {
+        if ($meta->category === null) {
             $this->output->info("Category not set for article {$meta->externalId}");
+
+            return;
         }
+
+        $categoryLocalization = $meta->category->findLocalizationByLocale($meta->locale);
+        if (null === $categoryLocalization->external_id) {
+            throw new \RuntimeException("Category {$meta->category->slug} doesn't have external id for locale {$meta->locale}");
+        }
+
+        $connector->setPostCategory($meta->externalId, $categoryLocalization->external_id);
     }
 
     public function updateAuthor(string $path, string $name): void

@@ -32,6 +32,11 @@ class ArticleResolver
             $article->published_at = $mainMeta->publishedAt;
             $article->modified_at = $mainMeta->modifiedAt;
             $article->url = $mainMeta->url;
+
+            if(null !== $mainMeta->category){
+                $article->category()->associate($mainMeta->category);
+            }
+
             $article->save();
 
             return $article;
@@ -59,6 +64,9 @@ class ArticleResolver
             $this->articleVerifier->verifyPostMetaOnMainSite($mainMeta);
         }
 
+        if(null !== $mainMeta->category) {
+            $article->category()->associate($mainMeta->category);
+        }
         $article->locale()->associate($originalMeta->locale);
         $article->path = $path;
         $article->title = $mainMeta->title;

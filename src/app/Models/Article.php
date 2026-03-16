@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * 
+ *
  *
  * @property string $id
  * @property string $path
@@ -77,6 +77,11 @@ class Article extends Model
     public function locale(): BelongsTo
     {
         return $this->belongsTo(Locale::class, 'locale_id', 'id');
+    }
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class, 'category_id', 'id');
     }
 
     public function localizations(): HasMany

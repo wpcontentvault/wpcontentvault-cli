@@ -26,7 +26,7 @@ class CategoryMetaManager extends MetadataManager
         $data = file_get_contents($filePath);
         $json = json_decode($data, true);
 
-        if($json === null) {
+        if ($json === null) {
             throw new \RuntimeException("Invalid JSON in file: {$filePath}");
         }
 
@@ -41,6 +41,7 @@ class CategoryMetaManager extends MetadataManager
             name: $json['name'],
             url: $json['url'],
             externalId: $json['external_id'],
+            slug: $json['slug'] ?? null,
             description: $description,
         );
     }

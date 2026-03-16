@@ -59,7 +59,11 @@ class ManifestReader
         $tags = [];
 
         foreach ($sharedJson['tags'] ?? [] as $tag) {
-            $tags[] = $this->tagResolver->resolveTagBySlug($tag);
+            $tag = $this->tagResolver->resolveTagBySlug($tag);
+
+            if (null !== $tag) {
+                $tags[] = $tag;
+            }
         }
 
         return new PostMeta(

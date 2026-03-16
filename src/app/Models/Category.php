@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * 
+ *
  *
  * @property string $id
  * @property string $slug
@@ -37,6 +37,11 @@ class Category extends Model
     public function localizations(): HasMany
     {
         return $this->hasMany(CategoryLocalization::class, 'category_id', 'id');
+    }
+
+    public function articles(): HasMany
+    {
+        return $this->hasMany(Article::class, 'category_id', 'id');
     }
 
     public function findLocalizationByLocale(Locale $locale): ?CategoryLocalization

@@ -19,9 +19,13 @@ class SitemapBuilder
     {
         $this->sitemapDom = new DOMDocument('1.0', 'utf-8');
         $this->sitemapDom->formatOutput = true;
+
+        $stylesheet = $this->sitemapDom->createProcessingInstruction('xml-stylesheet', 'type="text/xsl" href="/sitemap.xsl"');
+        $this->sitemapDom->appendChild($stylesheet);
+
         $this->urlSet = $this->sitemapDom->createElement('urlset');
         $this->urlSet->setAttribute('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9');
-        $this->urlSet->setAttribute('xmlns:xtml', 'http://www.w3.org/1999/xhtml');
+        $this->urlSet->setAttribute('xmlns:xhtml', 'http://www.w3.org/1999/xhtml');
         $this->sitemapDom->appendChild($this->urlSet);
     }
 
@@ -46,7 +50,7 @@ class SitemapBuilder
 
         foreach ($alternateLinks->getLinks() as $link) {
             /** @var AlternateLink $link */
-            $xlink = $this->sitemapDom->createElement('xtml:link');
+            $xlink = $this->sitemapDom->createElement('xhtml:link');
             $xlink->setAttribute('rel', 'alternate');
             $xlink->setAttribute('href', $link->url);
             $xlink->setAttribute('hreflang', $link->locale);
@@ -54,7 +58,7 @@ class SitemapBuilder
         }
 
         if(null !== $default) {
-            $defaultLink = $this->sitemapDom->createElement('xtml:link');
+            $defaultLink = $this->sitemapDom->createElement('xhtml:link');
             $defaultLink->setAttribute('rel', 'alternate');
             $defaultLink->setAttribute('href', $default);
             $defaultLink->setAttribute('hreflang', 'x-default');

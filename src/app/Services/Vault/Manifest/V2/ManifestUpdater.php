@@ -66,7 +66,12 @@ class ManifestUpdater
     {
         $json = $this->deserializeShared($path);
 
-        $json['tags'] = collect($tags)->pluck('slug')->toArray();
+        $json['tags'] = collect($tags)
+            ->filter(function ($tag) {
+                return $tag !== null;
+            })
+            ->pluck('slug')
+            ->toArray();
 
         $this->serializeShared($path, $json);
 

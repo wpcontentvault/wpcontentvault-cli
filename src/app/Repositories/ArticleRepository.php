@@ -19,6 +19,7 @@ class ArticleRepository extends AbstractRepository
     {
         return $this->createQuery()
             ->where('title', 'LIKE', '%' . $query . '%')
+            ->orWhere('url', 'LIKE', '%' . $query . '%')
             ->get();
     }
 
