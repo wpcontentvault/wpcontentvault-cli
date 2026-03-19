@@ -57,7 +57,7 @@ class ImportArticleTranslationsCommand extends AbstractApplicationCommand
             if(false === $sitesConfiguration->hasSiteConnectorForLocale($locale)){
                 $this->output->error("No connector configured for $localeCode");
 
-                return self::FAILURE;
+                continue;
             }
 
             $connector = $sitesConfiguration->getSiteConnectorByLocale($locale);

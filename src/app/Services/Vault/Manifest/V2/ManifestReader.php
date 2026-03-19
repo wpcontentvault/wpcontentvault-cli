@@ -78,6 +78,7 @@ class ManifestReader
             category: $category,
             tags: $tags,
             serializedId: $serializedId,
+            type: $json['type'] ?? null,
         );
     }
 }

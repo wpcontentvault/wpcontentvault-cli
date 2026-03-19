@@ -28,7 +28,7 @@ class PostCreator
             throw new RuntimeException('Article already exists!');
         }
 
-        return $mainSite->addPost($meta->title, '');
+        return $mainSite->addPost($meta->title, '', $meta->type);
     }
 
     public function createPostOnSubSite(PostMeta $meta): PostData
@@ -44,6 +44,6 @@ class PostCreator
             throw new RuntimeException('Article already exists!');
         }
 
-        return $site->addPost($meta->title, '');
+        return $site->addPost($meta->title, '', $meta->type);
     }
 }

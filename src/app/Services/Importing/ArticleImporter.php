@@ -34,9 +34,9 @@ class ArticleImporter
         $this->downloader = new ImageDownloader;
     }
 
-    public function importArticle(int $postId, WPConnectorInterface $connector, Locale $locale, string $name): void
+    public function importArticle(int $postId, WPConnectorInterface $connector, Locale $locale, string $name): string
     {
-        $this->processArticle($postId, $connector, $locale, $name, function (FullPostData $postData) {
+        return $this->processArticle($postId, $connector, $locale, $name, function (FullPostData $postData) {
             return $this->pathResolver->resolvePathFromPostData($postData);
         });
     }
@@ -62,7 +62,7 @@ class ArticleImporter
         });
     }
 
-    private function processArticle(int $postId, WPConnectorInterface $connector, Locale $locale, string $name, Closure $getPath): void
+    private function processArticle(int $postId, WPConnectorInterface $connector, Locale $locale, string $name, Closure $getPath): string
     {
         $postData = $connector->getPost($postId);
 
@@ -108,13 +108,15 @@ class ArticleImporter
 
         $this->writer->writeArticle($path, $name, $converted, $meta);
 
-        if (empty($thumbnail->attachmentUrl) === false) {
+        if (null !== $thumbnail && empty($thumbnail->attachmentUrl) === false) {
             $this->writer->writeCover($path, $name, $thumbnail->attachmentUrl);
         }
 
         $this->importChecksumMeta->writeImportChecksum($path, $name, $sum);
 
         $this->eventDispatcher->dispatch(new ArticleImported($postId, $path, $connector, $locale));
+
+        return $path;
     }
 
     private function processImportCover(int $postId, WPConnectorInterface $connector, string $fileName, Closure $getPath): void

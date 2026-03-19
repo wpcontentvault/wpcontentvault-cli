@@ -33,14 +33,15 @@ class TranslateArticleCommand extends AbstractApplicationCommand
      * Execute the console command.
      */
     public function handle(
-        TranslationService $service,
-        ArticleRepository $articles,
+        TranslationService  $service,
+        ArticleRepository   $articles,
         GlobalConfiguration $config,
-        ArticleReader $articleReader,
-        ParagraphParser $paragraphParser,
-        ParagraphCleaner $paragraphCleaner,
-        ArticleBuilder $builder,
-    ) {
+        ArticleReader       $articleReader,
+        ParagraphParser     $paragraphParser,
+        ParagraphCleaner    $paragraphCleaner,
+        ArticleBuilder      $builder,
+    )
+    {
         $id = $this->argument('id');
 
         $article = $articles->findArticleByExternalId(intval($id));
@@ -65,6 +66,13 @@ class TranslateArticleCommand extends AbstractApplicationCommand
         foreach ($article->localizations as $localization) {
             // Skip for original
             if ($article->locale->code === $localization->locale->code) {
+                continue;
+            }
+
+            $lockPath = $article->path . '/' . $localization->locale->code . '.lock';
+            if (file_exists($lockPath)) {
+                $this->info("Localization {$localization->locale->code} locked, skipping");
+
                 continue;
             }
 

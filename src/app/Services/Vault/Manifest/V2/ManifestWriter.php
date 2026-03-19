@@ -17,6 +17,10 @@ class ManifestWriter
                 'tags' => collect($meta->tags)->pluck('slug')->toArray(),
             ];
 
+            if (null !== $meta->type) {
+                $sharedData['type'] = $meta->type;
+            }
+
             file_put_contents(
                 $path . '/attrs.json',
                 json_encode($sharedData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)

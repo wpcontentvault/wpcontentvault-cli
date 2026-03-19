@@ -22,5 +22,6 @@ class PostMeta
         public readonly ?Category $category = null,
         public readonly array $tags = [],
         public readonly ?string $serializedId = null,
+        public readonly ?string $type = null,
     ) {}
 }

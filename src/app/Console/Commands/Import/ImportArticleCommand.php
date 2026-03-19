@@ -8,6 +8,9 @@ use App\Console\Commands\AbstractApplicationCommand;
 use App\Registry\SitesRegistry;
 use App\Repositories\LocaleRepository;
 use App\Services\Importing\ArticleImporter;
+use App\Services\Vault\Article\ArticleReader;
+use App\Services\Vault\Meta\ArticleIdMeta;
+use App\Services\Vault\VaultPathResolver;
 
 class ImportArticleCommand extends AbstractApplicationCommand
 {
@@ -16,7 +19,7 @@ class ImportArticleCommand extends AbstractApplicationCommand
      *
      * @var string
      */
-    protected $signature = 'import-article {id} {--locale=}';
+    protected $signature = 'import-article {id}';
 
     /**
      * The console command description.
@@ -28,26 +31,25 @@ class ImportArticleCommand extends AbstractApplicationCommand
     /**
      * Execute the console command.
      */
-    public function handle(SitesRegistry $sitesConfiguration, LocaleRepository $locales, ArticleImporter $importer): int
+    public function handle(
+        SitesRegistry    $sitesConfiguration,
+        LocaleRepository $locales,
+        ArticleImporter  $importer,
+        ArticleReader    $reader,
+        ArticleIdMeta    $articleIdMeta
+    ): int
     {
         $id = intval($this->argument('id'));
 
-        $localeCode = $this->option('locale');
-        if (empty($localeCode)) {
-            $localeCode = $sitesConfiguration->getMainSiteLocaleCode();
-        }
+        $connector = $sitesConfiguration->getMainSiteConnector();
+        $locale = $locales->findLocaleByCode($sitesConfiguration->getMainSiteLocaleCode());
 
-        $locale = $locales->findLocaleByCode($localeCode);
+        $path = $importer->importArticle($id, $connector, $locale, 'original');
 
-        if(false === $sitesConfiguration->hasSiteConnectorForLocale($locale)){
-            $this->output->error("No connector configured for $localeCode");
+        $article = $reader->loadArticleFromPath($path);
+        $articleIdMeta->writeSerializedId($path, $article->getKey());
 
-            return self::FAILURE;
-        }
-
-        $connector = $sitesConfiguration->getSiteConnectorByLocale($locale);
-
-        $importer->importArticle($id, $connector, $locale, 'original');
+        $this->call('import-article-translations', ['id' => $article->external_id]);
 
         return self::SUCCESS;
     }
