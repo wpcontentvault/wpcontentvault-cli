@@ -43,6 +43,12 @@ class UploadTagsCommand extends AbstractApplicationCommand
         $tagsList = $tagRepository->getAllTags();
 
         foreach ($tagsList as $tag) {
+            if ($tag->articles()->count() === 0) {
+                $this->info("Skipping {$tag->name} since it does not have articles");
+
+                continue;
+            }
+
             $exporter->exportTag($tag->path);
         }
 

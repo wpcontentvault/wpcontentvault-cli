@@ -33,6 +33,7 @@ class ArticleResolver
             $article->modified_at = $mainMeta->modifiedAt;
             $article->url = $mainMeta->url;
 
+            $article->tags()->sync($mainMeta->tags);
             if(null !== $mainMeta->category){
                 $article->category()->associate($mainMeta->category);
             }
@@ -67,6 +68,7 @@ class ArticleResolver
         if(null !== $mainMeta->category) {
             $article->category()->associate($mainMeta->category);
         }
+        $article->tags()->sync($mainMeta->tags);
         $article->locale()->associate($originalMeta->locale);
         $article->path = $path;
         $article->title = $mainMeta->title;

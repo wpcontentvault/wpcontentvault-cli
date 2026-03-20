@@ -79,7 +79,7 @@ class SetOriginalLocaleCommand extends AbstractApplicationCommand
         rename($article->path . 'temp_original.json', $article->path . $oldOriginalCode . '.json');
         rename($article->path . 'temp_original.md', $article->path . $oldOriginalCode . '.md');
 
-        $article->locale()->associate($originalMeta->locale);
+        $article->locale()->associate($locale);
         $article->save();
 
         return self::SUCCESS;
