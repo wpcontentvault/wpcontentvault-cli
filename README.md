@@ -42,14 +42,17 @@ Supported:
 
 - Importing posts from HTML to Markdown
 - Exporting posts in Gutenberg format
-- Exporting post titles
+- Exporting categories
+- Exporting tags
+- Setting tags and categories for post
+- Binding all translations for posts, tags and categories during post uploading
 - Translating articles using AI
+- Assigning tags for article in command line interface with search
+- Generating sitemap with alternate links for translations
 
 Not supported yet:
 
 - Importing posts from Gutenberg to Markdown (Currently Gutenberg articles are first converted to HTML)
-- Exporting post categories
-- Exporting post tags
 - Selecting post categories using AI
 - Selecting post tags using AI
 - Fixing parent_id for previously uploaded images
@@ -93,6 +96,8 @@ Supported commands:
 - **translate-article {id}** - translate the article to all languages for which Manifest files have been created
 - **upload-article {id}** - upload article content and translations to the site
 - **upload-articles** - upload all articles and their content to the site
+- **generate-sitemap** - generate a sitemap with alternate links for translations
+- **upload-sitemap** - upload generated sitemap to the site
 
 ## Supported WordPress Blocks
 
