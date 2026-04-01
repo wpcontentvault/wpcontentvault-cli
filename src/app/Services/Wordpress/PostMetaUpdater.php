@@ -75,14 +75,16 @@ class PostMetaUpdater
             ->filter(function (TagLocalization $tag) {
                 return $tag->external_id !== null;
             })
-            ->pluck('name')
+            ->pluck('external_id')
             ->toArray();
 
+        /*
         if (empty($tags)) {
             $this->output->info("Tags not set for article {$meta->externalId}");
 
             return;
         }
+        */
 
         $connector->setPostTags($meta->externalId, $tags);
     }

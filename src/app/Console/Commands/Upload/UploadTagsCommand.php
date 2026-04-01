@@ -44,7 +44,7 @@ class UploadTagsCommand extends AbstractApplicationCommand
 
         foreach ($tagsList as $tag) {
             if ($tag->articles()->count() === 0) {
-                $this->info("Skipping {$tag->name} since it does not have articles");
+                $this->info("Skipping {$tag->slug} since it does not have articles");
 
                 continue;
             }

@@ -20,6 +20,8 @@ class ArticleRepository extends AbstractRepository
         return $this->createQuery()
             ->where('title', 'LIKE', '%' . $query . '%')
             ->orWhere('url', 'LIKE', '%' . $query . '%')
+            ->orWhere('title', 'LIKE', '%' . ucfirst($query) . '%')
+            ->orWhere('title', 'LIKE', '%' . mb_strtolower($query) . '%')
             ->get();
     }
 

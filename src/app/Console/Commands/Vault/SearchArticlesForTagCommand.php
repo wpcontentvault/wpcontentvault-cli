@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Console\Commands\Vault;
 
 use App\Console\Commands\AbstractApplicationCommand;
+use App\Models\Article;
 use App\Repositories\ArticleRepository;
 use App\Repositories\TagRepository;
 use App\Services\Vault\Manifest\V2\ManifestReader;
@@ -76,7 +77,14 @@ class SearchArticlesForTagCommand extends AbstractApplicationCommand
 
         $selected = multiselect(
             label: 'Choose articles for selected tag',
-            options: $articlesList->pluck('title', 'id')->toArray()
+            options: $articlesList
+                ->map(function (Article $article) {
+                    $tags = implode(",", $article->tags->pluck('slug')->toArray());
+                    $article->title = $article->title . "($tags)";
+
+                    return $article;
+                })
+                ->pluck('title', 'id')->toArray()
         );
 
         foreach ($selected as $articleId) {

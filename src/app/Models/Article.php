@@ -118,4 +118,15 @@ class Article extends Model
 
         return null;
     }
+
+    public function findTagBySlug(string $slug): ?Tag
+    {
+        foreach ($this->tags as $tag) {
+            if ($tag->slug == $slug) {
+                return $tag;
+            }
+        }
+
+        return null;
+    }
 }

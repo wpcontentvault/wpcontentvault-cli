@@ -70,6 +70,7 @@ class ManifestUpdater
             ->filter(function ($tag) {
                 return $tag !== null;
             })
+            ->unique('slug')
             ->pluck('slug')
             ->toArray();
 
@@ -102,6 +103,9 @@ class ManifestUpdater
         $data = file_get_contents($fileName);
         $json = json_decode($data, true);
 
+        if (null === $json) {
+            throw new RuntimeException("Error reading manifest for article $path:" . json_last_error_msg());
+        }
         return $json;
     }
 

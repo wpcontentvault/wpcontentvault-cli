@@ -8,6 +8,7 @@ use App\Console\Commands\AbstractApplicationCommand;
 use App\Models\Article;
 use App\Models\ArticleLocalization;
 use App\Repositories\ArticleRepository;
+use App\Repositories\TagRepository;
 use App\Services\Vault\Manifest\ManifestNameResolver;
 use App\Services\Wordpress\PostMetaUpdater;
 
@@ -18,7 +19,7 @@ class UpdateTagsForAllArticlesCommand extends AbstractApplicationCommand
      *
      * @var string
      */
-    protected $signature = 'update-tags-for-articles {--year=} {--continue=}';
+    protected $signature = 'update-tags-for-articles {--year=} {--continue=} {--tag=}';
 
     /**
      * The console command description.
@@ -34,15 +35,23 @@ class UpdateTagsForAllArticlesCommand extends AbstractApplicationCommand
         ArticleRepository    $articles,
         ManifestNameResolver $manifestNameResolver,
         PostMetaUpdater      $postMetaUpdater,
+        TagRepository        $tags
     ): int
     {
         $year = $this->option('year');
         $continue = $this->option('continue');
+        $tagSlug = $this->option('tag');
 
         if (null === $year) {
             $articlesList = $articles->getAllArticles();
         } else {
             $articlesList = $articles->getArticlesByYear(intval($year));
+        }
+
+        if (null !== $tagSlug) {
+            $tag = $tags->findTagBySlug($tagSlug);
+        } else {
+            $tag = null;
         }
 
         foreach ($articlesList as $article) {
@@ -53,7 +62,11 @@ class UpdateTagsForAllArticlesCommand extends AbstractApplicationCommand
                 $continue = null;
             }
 
-            foreach($article->localizations as $localization) {
+            if(null !== $tag && false === $article->findTagBySlug($tag->slug)){
+                continue;
+            }
+
+            foreach ($article->localizations as $localization) {
                 /** @var ArticleLocalization $localization */
                 $name = $manifestNameResolver->resolveName($article, $localization->locale);
 
