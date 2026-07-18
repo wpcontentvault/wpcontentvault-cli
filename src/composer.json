@@ -22,7 +22,8 @@
         "seriyyy95/losst-extension": "dev-main",
         "seriyyy95/wpajaxconnector-php": "dev-main",
         "spatie/regex": "^3.1",
-        "symfony/finder": "^7.1"
+        "symfony/finder": "^7.1",
+        "typesetterio/typesetter": "^0.10.1"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.5",

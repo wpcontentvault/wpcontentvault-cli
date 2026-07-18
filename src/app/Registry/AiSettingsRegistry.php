@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Registry;
 
 use App\Configuration\AI\AiRequestConfiguration;
+use App\Configuration\AI\Provider\CliProxyApiProviderConfiguration;
 use App\Configuration\AI\Provider\GroqProviderConfiguration;
 use App\Configuration\AI\Provider\OllamaProviderConfiguration;
 use App\Configuration\AI\Provider\OpenRouterProviderConfiguration;
@@ -40,6 +41,7 @@ class AiSettingsRegistry
                 AiProviderEnum::OPEN_ROUTER->value => new OpenRouterProviderConfiguration($provider),
                 AiProviderEnum::OLLAMA->value => new OllamaProviderConfiguration($provider),
                 AiProviderEnum::GROQ->value => new GroqProviderConfiguration($provider),
+                AiProviderEnum::CLI_PROXY_API->value => new CliProxyApiProviderConfiguration($provider),
                 default => throw new RuntimeException(sprintf('Provider "%s" does not exist.', $name))
             };
         }

@@ -21,6 +21,7 @@ class GroqProviderConfiguration implements AiProviderConfigurationInterface
     {
         return match ($model) {
             AiModelEnum::GPT_OSS => 'openai/gpt-oss-120b',
+            default => throw new \RuntimeException("Model {$model->value} is not supported by this provider"),
         };
     }
 

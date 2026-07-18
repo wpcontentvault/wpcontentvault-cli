@@ -22,9 +22,13 @@ class OpenRouterProviderConfiguration implements AiProviderConfigurationInterfac
         return match ($model) {
             AiModelEnum::CLAUDE_SONNET_3_5 => 'anthropic/claude-3.5-sonnet',
             AiModelEnum::CLAUDE_SONNET_4_5 => 'anthropic/claude-4.5-sonnet',
+            AiModelEnum::CLAUDE_OPUS_4_7 => 'anthropic/claude-opus-4.7',
+            AiModelEnum::MISTRAL_SMALL_4 => 'mistralai/mistral-small-2603',
             AiModelEnum::DEEPSEEK_V3 => 'deepseek/deepseek-chat',
             AiModelEnum::GPT_OSS => 'openai/gpt-oss-120b',
             AiModelEnum::MISTRAL_EMBED => 'mistralai/mistral-embed-2312',
+            AiModelEnum::QWEN_3_5 => 'qwen/qwen3.5-397b-a17b',
+            default => throw new \RuntimeException("Model {$model->value} is not supported by this provider"),
         };
     }
 

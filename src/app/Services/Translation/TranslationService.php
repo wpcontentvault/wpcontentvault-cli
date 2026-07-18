@@ -241,7 +241,14 @@ SYSTEM;
         $content = str_replace('```json', '', $result->content);
         $content = str_replace('```', '', $content);
         $content = str_replace('\_', '_', $content);
-        $content = str_replace('\*', '_', $content);
+        $content = str_replace('\\_', '_', $content);
+        $content = str_replace('\\\_', '_', $content);
+        $content = str_replace('\*', '*', $content);
+        $content = str_replace('\\*', '*', $content);
+        $content = str_replace('«', "\\\"", $content);
+        $content = str_replace('»', "\\\"", $content);
+        $content = str_replace('—', "-", $content);
+        $content = str_replace('–', "-", $content);
         $data = json_decode($content, true);
 
         if ($data === null) {

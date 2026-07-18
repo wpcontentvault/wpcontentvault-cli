@@ -18,6 +18,11 @@ class VaultPathResolver
         return $this->getRoot().Str::finish('articles', '/');
     }
 
+    public function getPdfRoot(): string
+    {
+        return $this->getRoot().Str::finish('pdf', '/');
+    }
+
     public function resolveArticlePath(string $path): string
     {
         $path = Str::ltrim($path, '/');

@@ -9,7 +9,7 @@ WordPress is an excellent CMS for creating a blog. It's stable, has good backwar
 - Available solutions for creating multilingual sites require a lot of manual work, such as translation, image insertion. Moreover, synchronizing multiple translations when changing the original article is even more complicated
 - Since the introduction of the Gutenberg editor, no console tool has been created to convert articles to the new format
 - Images are inserted into articles as thumbnails; if you change the thumbnail size in settings and regenerate thumbnails, all images in articles will become broken with no way to update them without editing each article manually
-- If you replace an image in an article with another one or delete the article entirely, the images will remain in the media library, and there's no way to find and delete them all without risking breaking something
+- If you replace an image in an article with another one or delete the article entirely, the images will remain in the media library, and there's no way to find and delete them all wi.thout risking breaking something
 - Images in articles are difficult to modify. For example, if you wanted to draw an arrow on one of the screenshots after you uploaded it, you would need to save this image on your PC, edit it, and then upload it again
 
 This tool is designed to try to solve these problems using WordPress as a frontend. The idea is that all work with articles is done on your computer. Articles are stored in Markdown format, and all images related to the article are located in the article's folder.

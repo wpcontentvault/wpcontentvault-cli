@@ -33,12 +33,16 @@ class VectorDictionary
         $similarityData = [];
 
         foreach ($this->data as $key => $value) {
-            $similarity = Cosine::similarityFromVectors(
-                $embeddings,
-                $value
-            );
-            if ($similarity > 0.4) {
-                $similarityData[$key] = $similarity;
+            try {
+                $similarity = Cosine::similarityFromVectors(
+                    $embeddings,
+                    $value
+                );
+                if ($similarity > 0.4) {
+                    $similarityData[$key] = $similarity;
+                }
+            } catch (\InvalidArgumentException $e) {
+                continue;
             }
         }
 

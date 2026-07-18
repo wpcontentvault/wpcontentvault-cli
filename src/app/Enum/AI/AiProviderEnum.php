@@ -9,4 +9,5 @@ enum AiProviderEnum: string
     case OPEN_ROUTER = 'open_router';
     case OLLAMA = 'ollama';
     case GROQ = 'groq';
+    case CLI_PROXY_API = 'cli_proxy_api';
 }

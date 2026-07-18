@@ -18,12 +18,12 @@ use App\Services\Wordpress\PostCreator;
 class ArticleLocalizationsDiscovery
 {
     public function __construct(
-        private SitesRegistry $sitesConfiguration,
-        private LocaleRepository $locales,
-        private ManifestReader $manifestReader,
+        private SitesRegistry        $sitesConfiguration,
+        private LocaleRepository     $locales,
+        private ManifestReader       $manifestReader,
         private ManifestNameResolver $manifestNameResolver,
-        private PostCreator $postCreator,
-        private ManifestUpdater $manifestUpdater,
+        private PostCreator          $postCreator,
+        private ManifestUpdater      $manifestUpdater,
     ) {}
 
     public function discoverAndCreateLocalizations(Article $article): void
@@ -32,6 +32,10 @@ class ArticleLocalizationsDiscovery
         $list = $this->locales->getAllLocales();
 
         foreach ($list as $locale) {
+            if (false === $this->sitesConfiguration->hasSiteConnectorForLocale($locale)) {
+                continue;
+            }
+
             $name = $this->manifestNameResolver->resolveName($article, $locale);
 
             // Skip if there is no such locale for the article
